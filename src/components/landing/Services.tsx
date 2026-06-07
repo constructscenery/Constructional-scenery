@@ -6,7 +6,7 @@ const services = [
   { icon: Tv, t: "TV Production Sets", d: "Long-running series, dramas and entertainment formats." },
   { icon: Megaphone, t: "Commercial Builds", d: "Hero sets and product environments for global campaigns." },
   { icon: Sparkles, t: "Experiential Events", d: "Brand activations and immersive installations." },
-  { icon: Paintbrush2, t: "Scenic Painting", d: "Trompe-l&apos;œil, ageing, period finishes and large-scale backings." },
+  { icon: Paintbrush2, t: "Scenic Painting", d: "Trompe-l’œil, ageing, period finishes and large-scale backings." },
   { icon: Hammer, t: "Bespoke Fabrication", d: "Sculptural builds, props, metalwork and prototyping." },
 ];
 
