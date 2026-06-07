@@ -148,7 +148,7 @@
 //   );
 // }
 
-
+// what if 
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -181,7 +181,7 @@ export function Hero() {
           poster={heroImg}
           className="h-full w-full object-cover opacity-70"
         >
-          <source src="/src/assets/6077148_Studio Photo Shoot Photography Softbox Lighting_By_Big_Shot_Theory_Artlist_HD.mp4" type="video/mp4" />
+          <source src="/videos/hero-set.mp4" type="video/mp4" />
         </video>
       </motion.div>
 
