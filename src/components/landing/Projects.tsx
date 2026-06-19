@@ -57,39 +57,46 @@ export function Projects() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-[260px] md:auto-rows-[320px] gap-4 md:gap-6">
           <AnimatePresence>
-            {visible.map((p, idx) => (
-              <motion.a
-                key={p.name}
-                href="#contact"
-                layout
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.7, delay: (idx % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                className={`group relative overflow-hidden rounded-2xl bg-fog ${p.span ?? ""}`}
-              >
-                <img
-                  src={p.img}
-                  alt={`${p.name} — ${p.type}`}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 text-white">
-                  <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/60 mb-2">
-                    <span>{p.type}</span>
-                    <span>{p.year}</span>
-                  </div>
-                  <h3 className="font-display text-2xl md:text-3xl mb-1">{p.name}</h3>
-                  <div className="overflow-hidden max-h-0 group-hover:max-h-20 transition-[max-height] duration-500">
-                    <p className="pt-2 text-sm text-white/70">{p.services}</p>
-                    <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-white">
-                      View case study <ArrowUpRight className="h-3.5 w-3.5" />
+            {visible.map((p, idx) => {
+              const Cmp: any = p.slug ? Link : "a";
+              const linkProps = p.slug
+                ? { to: "/worlds/$slug", params: { slug: p.slug } }
+                : { href: "#contact" };
+              return (
+                <motion.div
+                  key={p.name}
+                  layout
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7, delay: (idx % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                  className={`group relative overflow-hidden rounded-2xl bg-fog ${p.span ?? ""}`}
+                >
+                  <Cmp {...linkProps} className="absolute inset-0 block">
+                    <img
+                      src={p.img}
+                      alt={`${p.name} — ${p.type}`}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 text-white">
+                      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/60 mb-2">
+                        <span>{p.type}</span>
+                        <span>{p.year}</span>
+                      </div>
+                      <h3 className="font-display text-2xl md:text-3xl mb-1">{p.name}</h3>
+                      <div className="overflow-hidden max-h-0 group-hover:max-h-20 transition-[max-height] duration-500">
+                        <p className="pt-2 text-sm text-white/70">{p.services}</p>
+                        <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-white">
+                          {p.slug ? "View case study" : "Enquire"} <ArrowUpRight className="h-3.5 w-3.5" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.a>
-            ))}
+                  </Cmp>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
 
