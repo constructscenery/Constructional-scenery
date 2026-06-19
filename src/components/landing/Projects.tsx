@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, Plus } from "lucide-react";
-import p1 from "@/assets/project-1.jpg";
 import p2 from "@/assets/project-2.jpg";
-import p3 from "@/assets/project-3.jpg";
 import p4 from "@/assets/project-4.jpg";
-import p5 from "@/assets/project-5.jpg";
 import p6 from "@/assets/project-6.jpg";
 import p7 from "@/assets/project-7.jpg";
 import p8 from "@/assets/project-8.jpg";
+import { worlds } from "@/lib/worlds-data";
 
 type Project = {
+  slug?: string;
   img: string;
   name: string;
   type: string;
@@ -20,11 +20,11 @@ type Project = {
 };
 
 const projects: Project[] = [
-  { img: p1, name: "House of Echoes", type: "BBC Period Drama", services: "Set build · Scenic finishing", year: "2025", span: "row-span-2" },
+  { slug: "clayface", img: worlds[0].heroImage, name: "Clayface", type: "DC Feature Film", services: "Sculpting · Standby · Hero build", year: "2025", span: "row-span-2" },
   { img: p2, name: "Aurora Pavilion", type: "Brand Activation", services: "Fabrication · Installation", year: "2025" },
-  { img: p3, name: "Orbital Nine", type: "Feature Film", services: "Hero set · Standby", year: "2024", span: "row-span-2" },
+  { slug: "you", img: worlds[1].heroImage, name: "You", type: "Netflix Series", services: "Recurring interiors · Standby", year: "2024", span: "row-span-2" },
   { img: p4, name: "Bloom Couture", type: "Commercial", services: "Scenic · Sculptural backdrop", year: "2024" },
-  { img: p5, name: "Whitechapel Yards", type: "TV Drama", services: "Backlot build · Painting", year: "2025", span: "row-span-2" },
+  { slug: "trespass-against-us", img: worlds[2].heroImage, name: "Trespass Against Us", type: "Feature Film", services: "Location build · Scenic finishing", year: "2024", span: "row-span-2" },
   { img: p6, name: "Vanguard Awards", type: "Live Event", services: "Stage architecture", year: "2024" },
   { img: p7, name: "The Late Edit", type: "Studio Format", services: "LED set · Furniture", year: "2025" },
   { img: p8, name: "Maison Pop-Up", type: "Experiential Retail", services: "Sculptural fabrication", year: "2024", span: "row-span-2" },
