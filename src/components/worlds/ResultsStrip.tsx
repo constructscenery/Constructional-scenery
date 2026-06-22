@@ -3,7 +3,7 @@ import type { World } from "@/lib/worlds-data";
 
 export function ResultsStrip({ world }: { world: World }) {
   return (
-    <section className="bg-ink text-background py-32 md:py-40">
+    <section className="bg-zinc-950 text-white py-32 md:py-40">
       <div className="container-x">
         <motion.p
           initial={{ opacity: 0, y: 10 }}
