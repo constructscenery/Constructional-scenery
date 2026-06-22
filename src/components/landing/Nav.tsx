@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -51,12 +52,15 @@ export function Nav() {
                 </a>
               ))}
             </nav>
-            <a
-              href="#contact"
-              className="rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-background hover:opacity-90 transition"
-            >
-              Start a project
-            </a>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <a
+                href="#contact"
+                className="rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-background hover:opacity-90 transition"
+              >
+                Start a project
+              </a>
+            </div>
           </div>
         </div>
       </motion.header>
