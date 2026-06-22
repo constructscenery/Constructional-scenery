@@ -12,7 +12,7 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="relative bg-ink text-background py-32 md:py-48 overflow-hidden">
+    <section id="services" className="relative bg-zinc-950 text-white py-32 md:py-48 overflow-hidden">
       <div className="container-x">
         <div className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
           <motion.div
@@ -42,7 +42,7 @@ export function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.7, delay: idx * 0.06 }}
-                className="group relative bg-ink p-8 md:p-10 transition-all duration-500 hover:bg-white/[0.04]"
+                className="group relative bg-zinc-950 p-8 md:p-10 transition-all duration-500 hover:bg-white/[0.04]"
               >
                 <div className="flex items-start justify-between mb-12">
                   <Icon className="h-7 w-7 text-white/70 transition-all duration-500 group-hover:text-white group-hover:scale-110" />
