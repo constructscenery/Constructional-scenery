@@ -53,7 +53,7 @@
 
   --ink: oklch(0.13 0.005 270);
   --ink-soft: oklch(0.22 0.008 270);
-  --fog: oklch(0.96 0.003 270);
+  --fog: oklch(0.94 0.003 270);
   --chrome: oklch(0.55 0.01 270);
 
   --card: oklch(1 0 0);
