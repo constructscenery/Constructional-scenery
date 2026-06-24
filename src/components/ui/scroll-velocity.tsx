@@ -20,9 +20,13 @@ interface ScrollVelocityProps extends React.HTMLAttributes<HTMLDivElement> {
   clamp?: boolean;
 }
 
-const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
+export interface ScrollVelocityHandle {
+  nudge: (delta: number) => void;
+}
+
+const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps & { apiRef?: React.Ref<ScrollVelocityHandle> }>(
   (
-    { children, velocity = 5, movable = true, clamp = false, className, ...props },
+    { children, velocity = 5, movable = true, clamp = false, className, apiRef, ...props },
     ref,
   ) => {
     const baseX = useMotionValue(0);
@@ -40,12 +44,28 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
 
     const directionFactor = React.useRef(1);
     const scrollThreshold = React.useRef(5);
+    const nudgeOffset = React.useRef(0);
+
+    React.useImperativeHandle(
+      apiRef,
+      () => ({
+        nudge: (delta: number) => {
+          nudgeOffset.current += delta;
+        },
+      }),
+      [],
+    );
 
     useAnimationFrame((_t, delta) => {
       if (movable) {
         move(delta);
       } else if (Math.abs(scrollVelocity.get()) >= scrollThreshold.current) {
         move(delta);
+      }
+      if (nudgeOffset.current !== 0) {
+        const step = nudgeOffset.current * Math.min(1, delta / 200);
+        nudgeOffset.current -= step;
+        baseX.set(baseX.get() + step);
       }
     });
 
@@ -86,6 +106,7 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
     );
   },
 );
+
 ScrollVelocity.displayName = "ScrollVelocity";
 
 export { ScrollVelocity, type ScrollVelocityProps };
