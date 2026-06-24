@@ -1,17 +1,24 @@
+import { useRef } from "react";
 import { motion } from "motion/react";
-import { ScrollVelocity } from "@/components/ui/scroll-velocity";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollVelocity, type ScrollVelocityHandle } from "@/components/ui/scroll-velocity";
 import type { World } from "@/lib/worlds-data";
 
 export function WorldGallery({ world }: { world: World }) {
   const images = world.gallery;
-  // Split into two rows for opposing velocity
   const half = Math.ceil(images.length / 2);
   const rowA = images.slice(0, half);
   const rowB = images.slice(half).concat(images.slice(0, Math.max(0, half - (images.length - half))));
   const rows: { items: string[]; velocity: number }[] = [
-    { items: [...rowA, ...rowA], velocity: 4 },
-    { items: [...rowB, ...rowB], velocity: -4 },
+    { items: [...rowA, ...rowA], velocity: 1.2 },
+    { items: [...rowB, ...rowB], velocity: -1.2 },
   ];
+
+  const apiRefs = [useRef<ScrollVelocityHandle>(null), useRef<ScrollVelocityHandle>(null)];
+
+  const nudgeAll = (dir: 1 | -1) => {
+    apiRefs.forEach((r) => r.current?.nudge(dir * 20));
+  };
 
   return (
     <section className="relative bg-background py-24 md:py-32">
@@ -32,9 +39,9 @@ export function WorldGallery({ world }: { world: World }) {
         </motion.div>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="relative flex flex-col gap-6">
         {rows.map((row, ri) => (
-          <ScrollVelocity key={ri} velocity={row.velocity}>
+          <ScrollVelocity key={ri} velocity={row.velocity} apiRef={apiRefs[ri]}>
             {row.items.map((src, i) => (
               <figure
                 key={`${ri}-${i}`}
@@ -50,6 +57,23 @@ export function WorldGallery({ world }: { world: World }) {
             ))}
           </ScrollVelocity>
         ))}
+
+        <button
+          type="button"
+          onClick={() => nudgeAll(1)}
+          aria-label="Scroll gallery left"
+          className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-3 text-ink shadow-lg backdrop-blur transition hover:bg-background"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          type="button"
+          onClick={() => nudgeAll(-1)}
+          aria-label="Scroll gallery right"
+          className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-background/80 p-3 text-ink shadow-lg backdrop-blur transition hover:bg-background"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
       </div>
     </section>
   );
