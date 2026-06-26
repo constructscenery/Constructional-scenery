@@ -32,9 +32,7 @@ export function Nav() {
       >
         <div className="container-x">
           <div
-            className={`flex items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 ${
-              scrolled ? "glass shadow-elevated" : "bg-transparent"
-            }`}
+            className={`flex items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 glass shadow-elevated`}
           >
             <Link to="/" className="flex items-center gap-2 group">
               <span className="font-display text-base tracking-tight text-ink">
