@@ -1,38 +1,43 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, Plus } from "lucide-react";
-import p2 from "@/assets/project-2.jpg";
-import p4 from "@/assets/project-4.jpg";
-import p6 from "@/assets/project-6.jpg";
-import p7 from "@/assets/project-7.jpg";
-import p8 from "@/assets/project-8.jpg";
-import { worlds } from "@/lib/worlds-data";
-
-type Project = {
-  slug?: string;
-  img: string;
-  name: string;
-  type: string;
-  services: string;
-  year: string;
-  span?: string;
-};
-
-const projects: Project[] = [
-  { slug: "clayface", img: worlds[0].heroImage, name: "Clayface", type: "DC Feature Film", services: "Sculpting · Standby · Hero build", year: "2025", span: "row-span-2" },
-  { img: p2, name: "Aurora Pavilion", type: "Brand Activation", services: "Fabrication · Installation", year: "2025" },
-  { slug: "you", img: worlds[1].heroImage, name: "You", type: "Netflix Series", services: "Recurring interiors · Standby", year: "2024", span: "row-span-2" },
-  { img: p4, name: "Bloom Couture", type: "Commercial", services: "Scenic · Sculptural backdrop", year: "2024" },
-  { slug: "trespass-against-us", img: worlds[2].heroImage, name: "Trespass Against Us", type: "Feature Film", services: "Location build · Scenic finishing", year: "2024", span: "row-span-2" },
-  { img: p6, name: "Vanguard Awards", type: "Live Event", services: "Stage architecture", year: "2024" },
-  { img: p7, name: "The Late Edit", type: "Studio Format", services: "LED set · Furniture", year: "2025" },
-  { img: p8, name: "Maison Pop-Up", type: "Experiential Retail", services: "Sculptural fabrication", year: "2024", span: "row-span-2" },
-];
+import { apiFetch } from "@/lib/api/client";
+import type { ApiProject } from "@/lib/api/types";
+import { resolveUrl } from "@/lib/api/imageResolver";
 
 export function Projects() {
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => apiFetch<ApiProject[]>("/api/projects"),
+    staleTime: 5 * 60_000,
+  });
+
   const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? projects : projects.slice(0, 6);
+
+  const allProjects = data?.filter((p) => p.visible) ?? [];
+  const visible = showAll ? allProjects : allProjects.slice(0, 6);
+
+  if (isPending) {
+    return (
+      <section id="work" className="bg-background py-32 md:py-48">
+        <div className="container-x animate-pulse space-y-12">
+          <div className="space-y-4">
+            <div className="h-3 w-28 rounded bg-muted/40" />
+            <div className="h-14 w-1/2 rounded-xl bg-muted/40" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-[260px] md:auto-rows-[320px] gap-4 md:gap-6">
+            {Array.from({ length: 6 }).map((_, k) => (
+              <div key={k} className="rounded-2xl bg-muted/30" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError || allProjects.length === 0) return null;
 
   return (
     <section id="work" className="bg-background py-32 md:py-48">
@@ -64,7 +69,7 @@ export function Projects() {
                 : { href: "#contact" };
               return (
                 <motion.div
-                  key={p.name}
+                  key={p.id}
                   layout
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -74,7 +79,7 @@ export function Projects() {
                 >
                   <Cmp {...linkProps} className="absolute inset-0 block">
                     <img
-                      src={p.img}
+                      src={resolveUrl(p.imageUrl)}
                       alt={`${p.name} — ${p.type}`}
                       loading="lazy"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06]"
@@ -89,7 +94,8 @@ export function Projects() {
                       <div className="overflow-hidden max-h-0 group-hover:max-h-20 transition-[max-height] duration-500">
                         <p className="pt-2 text-sm text-white/70">{p.services}</p>
                         <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-white">
-                          {p.slug ? "View case study" : "Enquire"} <ArrowUpRight className="h-3.5 w-3.5" />
+                          {p.slug ? "View case study" : "Enquire"}{" "}
+                          <ArrowUpRight className="h-3.5 w-3.5" />
                         </div>
                       </div>
                     </div>
@@ -100,7 +106,7 @@ export function Projects() {
           </AnimatePresence>
         </div>
 
-        {!showAll && (
+        {!showAll && allProjects.length > 6 && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

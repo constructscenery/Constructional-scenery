@@ -8,13 +8,18 @@ import { ProcessNarrative } from "@/components/worlds/ProcessNarrative";
 import { VimeoShowcase } from "@/components/worlds/VimeoShowcase";
 import { ResultsStrip } from "@/components/worlds/ResultsStrip";
 import { NextProjectNav } from "@/components/worlds/NextProjectNav";
-import { nextWorld, worldBySlug } from "@/lib/worlds-data";
+import { apiFetch } from "@/lib/api/client";
+import type { ApiWorld } from "@/lib/api/types";
+import { adaptApiWorld } from "@/lib/worlds-data";
 
 export const Route = createFileRoute("/worlds/$slug")({
-  loader: ({ params }) => {
-    const world = worldBySlug(params.slug);
-    if (!world) throw notFound();
-    return { world, next: nextWorld(params.slug) };
+  loader: async ({ params }) => {
+    const apiWorlds = await apiFetch<ApiWorld[]>("/api/worlds");
+    const idx = apiWorlds.findIndex((w) => w.slug === params.slug);
+    if (idx === -1) throw notFound();
+    const world = adaptApiWorld(apiWorlds[idx]);
+    const next = adaptApiWorld(apiWorlds[(idx + 1) % apiWorlds.length]);
+    return { world, next };
   },
   head: ({ loaderData }) => {
     const w = loaderData?.world;
