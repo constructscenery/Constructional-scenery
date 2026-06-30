@@ -1,7 +1,7 @@
 # Construct Scenery Portfolio — Session Handoff
 
-**Date:** 2026-06-29  
-**Session summary:** Connected the live portfolio (TanStack Start) to the admin API (Express + PostgreSQL) so all content is now dynamic. Fixed CORS, Cloudinary, a sustainability data-shape bug, and linked Projects to World case study pages in the admin.  
+**Date:** 2026-06-30  
+**Session summary:** Migrated all seeded images to Cloudinary, fixed TypeScript build errors blocking deployment, deployed admin panel to Vercel, exposed local admin API via ngrok so the live portfolio and admin panel can reach it.  
 **Portfolio repo:** https://github.com/umairusman617-gif/scenic-builds-elevated (this repo)  
 **Admin repo:** https://github.com/umairusman617-gif/construct-scenery-admin (separate private repo)
 
@@ -11,272 +11,337 @@
 
 | Project | Local path | Port | Purpose |
 |---|---|---|---|
-| **Portfolio** (this repo) | `/Users/umairusman/scenic-builds-elevated` | 8080 (or next available) | Public-facing TanStack Start site. Fetches ALL content from the API. |
-| **Admin API** | `/Users/umairusman/construct-scenery-admin` | 4000 | Express + Prisma backend. Manages PostgreSQL data. |
-| **Admin frontend** | `/Users/umairusman/construct-scenery-admin/client` | 5174 | React admin panel to edit content. |
+| **Portfolio** (this repo) | `/Users/umairusman/scenic-builds-elevated` | 8080 | Public-facing TanStack Start site. Fetches ALL content from the API. |
+| **Admin API** | `/Users/umairusman/construct-scenery-admin` | 4000 | Express + Prisma backend. Manages PostgreSQL data. Must be running locally. |
+| **Admin frontend** | `/Users/umairusman/construct-scenery-admin/client` | 5174 (local) | React admin panel. Also deployed at https://construct-scenery-admin.vercel.app |
 
 ---
 
-## 2. What Was Completed This Session
+## 2. Live URLs (Production)
 
-### Task 1 — Connected portfolio to admin API ✅ COMPLETE
+| Service | URL | Notes |
+|---|---|---|
+| Portfolio | https://scenic-builds-elevated.vercel.app | Vercel. Reads from ngrok tunnel. |
+| Admin panel | https://construct-scenery-admin.vercel.app | Vercel static SPA. Reads from ngrok tunnel. |
+| Admin API | https://democrat-both-cross.ngrok-free.dev | ⚠️ ngrok free — URL CHANGES every restart. See Section 9. |
+| Admin API (local) | http://localhost:4000 | Must be running locally for the above to work. |
 
-Replaced every hardcoded string in the portfolio with live API data. The portfolio previously read from `src/lib/worlds-data.ts` (a static TS file with hardcoded content). It now fetches from `http://localhost:4000` at runtime.
-
-**Files created:**
-
-| File | Purpose |
-|---|---|
-| `src/lib/api/client.ts` | `apiFetch<T>(path)` — base fetch wrapper. Reads `VITE_API_URL` env var. Throws on non-OK status or `success: false`. |
-| `src/lib/api/types.ts` | TypeScript interfaces for every API response shape, mirroring the Prisma schema exactly (`ApiHero`, `ApiLogo`, `ApiAbout`, `ApiService`, `ApiProject`, `ApiProcessStep`, `ApiTestimonial`, `ApiSustainability`, `ApiContact`, `ApiFooter`, `ApiWorld` + sub-types). |
-| `src/lib/api/imageResolver.ts` | Maps the flat `/assets/*.jpg` paths stored in the database (e.g. `/assets/project-3.jpg`) to the correct Vite content-hashed module URLs (e.g. `/assets/project-3.Dq8Z9Kab.jpg`). This is needed because the seed stored raw paths but Vite hashes asset filenames at build time. If a URL is NOT in the map (i.e. a real Cloudinary URL), it passes straight through unchanged. |
-| `src/lib/api/icons.ts` | Maps Lucide icon name strings stored in the DB (`"Clapperboard"`, `"TreePine"`, etc.) to the actual React component. Used by Services and Sustainability sections. |
-| `.env.example` | Documents the `VITE_API_URL` env var. |
-
-**Files modified:**
-
-| File | Change |
-|---|---|
-| `src/lib/worlds-data.ts` | Removed all hardcoded data arrays and helper functions (`worlds`, `worldBySlug`, `nextWorld`). Kept the `World`, `WorldCredit`, `WorldStat`, `WorldProcess` TypeScript types (still used by the worlds/* display components). Added `adaptApiWorld(w: ApiWorld): World` — converts the API response shape to the component shape (gallery `{ url }[]` → `string[]`, process `imageUrl` → `image`, strips DB-only fields). |
-| `src/routes/worlds.$slug.tsx` | Changed loader from synchronous (reading `worlds-data.ts`) to **async** (`apiFetch<ApiWorld[]>("/api/worlds")`). Finds current world by slug from the list, derives next world from the same list. Throws `notFound()` if slug not found. |
-| `src/components/landing/Hero.tsx` | `useQuery(["hero"])` → `GET /api/hero`. Video and poster stay as local assets (not CMS-managed). Text (eyebrow, headline, rotatingItems, bodyText, CTAs, trustStats) all come from API. Animate-pulse skeleton for text content during load. |
-| `src/components/landing/Logos.tsx` | `useQuery(["logos"])` → `GET /api/logos`. Filters `visible: true`. Shows logo image if `imageUrl` is set, otherwise renders the name as text. Skeleton: 8 pulse bars. |
-| `src/components/landing/About.tsx` | `useQuery(["about"])` → `GET /api/about`. Image URL resolved via `resolveUrl()`. Stats and pillars from JSON fields. Full skeleton while loading, `null` on error. |
-| `src/components/landing/Services.tsx` | `useQuery(["services"])` → `GET /api/services`. Icon name string resolved via `getIcon()`. Section heading shows live count. Full skeleton, `null` on error. |
-| `src/components/landing/Projects.tsx` | `useQuery(["projects"])` → `GET /api/projects`. No longer imports from `worlds-data.ts`. Images resolved via `resolveUrl()`. "Show more" button only appears if API returns more than 6 visible projects. |
-| `src/components/landing/Process.tsx` | `useQuery(["process"])` → `GET /api/process`. Uses `step.number`, `step.title`, `step.description`. Full skeleton while loading. |
-| `src/components/landing/Testimonials.tsx` | `useQuery(["testimonials"])` → `GET /api/testimonials`. Maps `imageUrl` → `image` for `TestimonialsColumn` component. Distributes into 3 columns using modulo (handles any count, not just 9). |
-| `src/components/landing/Sustainability.tsx` | `useQuery(["sustainability"])` → `GET /api/sustainability`. **Critical shape fix:** API returns a flat object `{ id, headline, bodyText, imageUrl, imageAlt, items: [] }` — NOT `{ section, items }`. Bug was that the original code destructured `section` which was `undefined`, causing the root error boundary to fire. Fixed to use `data.headline`, `data.items`, etc. directly. |
-| `src/components/landing/FinalCTA.tsx` | `useQuery(["contact"])` → `GET /api/contact`. CTA hrefs are `mailto:${data.cta1Email}`. Gradient background always renders during loading. |
-| `src/components/landing/Footer.tsx` | `useQuery(["footer"])` → `GET /api/footer`. Social links only shown if non-empty strings in DB. Columns rendered from JSON array `{ title, links: string[] }[]`. Falls back to brand name `"Construct/Scenery"` while loading so footer always shows something. |
-
-**Loading strategy across components:**
-- `staleTime: 5 * 60_000` on all queries (5-minute cache, instant on repeat visits)
-- All sections show an `animate-pulse` skeleton while `isPending`
-- All sections return `null` on error (section disappears cleanly rather than crashing)
-- Hero is special: video and overlay always render, only text content is gated on the query
-
-### Task 2 — Fixed CORS ✅ COMPLETE
-
-Portfolio dev server runs on port 8080/8081 (Vite tries each in order). Admin's `ALLOWED_ORIGINS` only listed 5173 and 5174. All API calls returned 500 (CORS rejection) in the browser even though `curl` worked fine.
-
-**File changed:** `/Users/umairusman/construct-scenery-admin/.env`
-```
-ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:8080,http://localhost:8081"
-```
-
-### Task 3 — Fixed Cloudinary image upload ✅ COMPLETE
-
-Cloudinary credentials were placeholder strings. Added real credentials to the admin `.env`. The upload endpoint (`POST /api/upload`) was already correctly written — it just needed real values.
-
-**File changed:** `/Users/umairusman/construct-scenery-admin/.env`
-- `CLOUDINARY_CLOUD_NAME="dvzkh1nal"`
-- `CLOUDINARY_API_KEY="773682671441411"`
-- `CLOUDINARY_API_SECRET="kwkBAiW1Utm2yzFsj_UEA63HKSU"`
-
-Uploaded images go to the `construct-scenery` Cloudinary folder and return `https://res.cloudinary.com/...` URLs that work everywhere.
-
-### Task 4 — Linked Projects to World case study pages ✅ COMPLETE
-
-Previously Projects and Worlds were completely independent. Creating a project with a slug did not create a World, and the Worlds editor had no awareness of which projects it was linked to.
-
-**Backend change:** `/Users/umairusman/construct-scenery-admin/src/controllers/projects.controller.ts`
-
-Added `ensureWorldExists(slug, project)` helper. Called in both `createProject` and `updateProject`. If a World with that slug already exists it is left untouched. If not, creates one with:
-- `title` = project name
-- `role` = project services string
-- `year`, `category`, `tags` = from project type/year
-- `heroImage` = project imageUrl
-- `visible: false` (hidden draft, user fills in and publishes)
-- All relation arrays (gallery, facts, credits, process, results) start empty
-
-**Frontend change:** `/Users/umairusman/construct-scenery-admin/client/src/pages/Projects.tsx`
-- Added `BookOpen` icon button per row (only on rows with a slug) → links to `/worlds/:slug/edit`
-- `createMut.onSuccess` now shows different toast when slug is present: *"Project created — world case study page drafted"*
-- Invalidates both `["projects"]` and `["worlds"]` queries on create
-
-### Task 5 — Added static upload serving ✅ COMPLETE
-
-Added `app.use("/uploads", express.static(...))` to `/Users/umairusman/construct-scenery-admin/src/app.ts` so locally-uploaded files (during development, before Cloudinary was configured) can be served. The `uploads/` directory exists with `.gitkeep` and its contents are gitignored.
+> **Critical:** The ngrok URL `https://democrat-both-cross.ngrok-free.dev` is not permanent. Every time the machine reboots or ngrok is restarted, the URL changes. When it changes you must update Vercel env vars on both Vercel projects and ALLOWED_ORIGINS in the admin `.env`. See Section 9 for the exact commands.
 
 ---
 
-## 3. Decisions Made and Why
+## 3. What Was Completed This Session
+
+### Task 1 — Migrated all images to Cloudinary ✅ COMPLETE
+
+**Problem:** All seeded images used local `/assets/*.jpg` paths (e.g. `/assets/project-3.jpg`). These worked locally via `imageResolver.ts` but would break on Vercel because Vite content-hashes filenames at build time and the paths don't exist in production.
+
+**Solution:** Wrote and ran `prisma/upload-images.ts` — a one-shot migration script that:
+1. Uploaded all 11 images from `src/assets/` in the portfolio repo to Cloudinary (`construct-scenery/` folder)
+2. Updated every database record referencing a `/assets/` path with the real Cloudinary URL
+3. Also found and migrated 2 projects (Clayface, Aurora Pavilion) that had `localhost:4000/uploads/` URLs from before Cloudinary was configured
+4. Final state: **43/43 image URLs in the database are now Cloudinary or external — zero local paths remain**
+
+**File created:**
+- `prisma/upload-images.ts` in the admin repo — the migration script (safe to re-run, uses `overwrite: true` on Cloudinary)
+
+**Verification:**
+```bash
+# Run from /Users/umairusman/construct-scenery-admin
+npx tsx -e "
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+const p = new PrismaClient();
+p.project.findMany({ select: { name: true, imageUrl: true } }).then(r => { r.forEach(x => console.log(x.name, x.imageUrl)); p.\$disconnect(); });
+"
+```
+All URLs should start with `https://res.cloudinary.com/` or `https://images.unsplash.com/`.
+
+---
+
+### Task 2 — Fixed TypeScript build errors ✅ COMPLETE
+
+Both the admin API and admin client had TypeScript errors that blocked Vercel's build step.
+
+**Admin API fixes** (`/Users/umairusman/construct-scenery-admin/`):
+
+| File | Error | Fix |
+|---|---|---|
+| `src/controllers/auth.controller.ts` | `jwt.sign()` — newer `@types/jsonwebtoken` uses branded `StringValue` type for `expiresIn`, so a plain `string` env var doesn't match | Assigned options to a typed-as-`any` variable before passing to `jwt.sign()` |
+| `src/controllers/worlds.controller.ts` (×5 places) | `req.params.slug` typed as `string \| string[]` in this Express version — Prisma `where` only accepts `string` | Wrapped all `req.params.slug` usages in `String()` cast |
+
+**Admin client fixes** (`/Users/umairusman/construct-scenery-admin/client/`):
+
+| File | Error | Fix |
+|---|---|---|
+| `client/src/vite-env.d.ts` | `import.meta.env` not typed — `Property 'env' does not exist on type 'ImportMeta'` | Created `vite-env.d.ts` with `/// <reference types="vite/client" />` |
+| `client/src/types/index.ts` | `WorldInput` type missing — form payloads have `gallery: [{url, order}]` but `Partial<World>` requires `gallery: WorldImage[]` (with `id` and `worldId`) | Added `WorldInput` type using `Omit<>` to strip `id`/`worldId` from sub-relation arrays |
+| `client/src/api/worlds.ts` | `create`/`update` accepted `Partial<World>` — incompatible with form payloads | Changed parameter type to `WorldInput` |
+
+**Verification:**
+```bash
+# Admin API — should produce zero output (zero errors)
+cd /Users/umairusman/construct-scenery-admin && npx tsc --noEmit
+
+# Admin client — should end with "built in X.Xs"
+cd /Users/umairusman/construct-scenery-admin/client && npm run build
+```
+
+---
+
+### Task 3 — Installed and configured ngrok ✅ COMPLETE
+
+**Why ngrok:** The admin API runs locally (connects to a local PostgreSQL database). The Vercel-hosted portfolio and admin panel need to reach it. ngrok creates a public HTTPS tunnel to port 4000.
+
+**Setup done:**
+- Installed: `brew install ngrok/ngrok/ngrok`
+- Auth token configured: `ngrok config add-authtoken 3Fms98T1pqkgr4NAVFBhMlSPD6d_3234p6Zab8Nep33kVgH6r`
+- Config saved to: `/Users/umairusman/Library/Application Support/ngrok/ngrok.yml`
+
+**Current tunnel:** `https://democrat-both-cross.ngrok-free.dev` → `http://localhost:4000`
+
+**Limitation:** Free ngrok accounts get a random URL on every restart. The URL will change when ngrok is stopped and restarted. See Section 9 for the update procedure.
+
+---
+
+### Task 4 — Added ngrok bypass header to both frontends ✅ COMPLETE
+
+ngrok free tier shows a browser-warning interstitial for requests that look like browser navigation. API fetch calls from JavaScript get blocked by this. The fix is to include the `ngrok-skip-browser-warning: true` header.
+
+**Portfolio** — `src/lib/api/client.ts`:
+```typescript
+const EXTRA_HEADERS: Record<string, string> = BASE.includes("ngrok")
+  ? { "ngrok-skip-browser-warning": "true" }
+  : {};
+// passed to every fetch() call
+```
+
+**Admin client** — `client/src/api/axios.ts`:
+```typescript
+headers: {
+  "Content-Type": "application/json",
+  ...(BASE.includes("ngrok") ? { "ngrok-skip-browser-warning": "true" } : {}),
+}
+```
+
+Both headers are conditional on the base URL containing `"ngrok"` — they are automatically absent in local dev and will be absent when/if the backend moves to a real hosting provider.
+
+---
+
+### Task 5 — Deployed admin panel to Vercel ✅ COMPLETE
+
+**Problem:** The Vercel project `construct-scenery-admin` was previously misconfigured — it deployed from the repo root (the Express API) rather than `client/` (the React SPA). Vercel tried to run the Express server as a serverless function and crashed with `FUNCTION_INVOCATION_FAILED`.
+
+**Fix:** Added `vercel.json` to the **root** of the admin repo that redirects the entire build to `client/`:
+
+```json
+{
+  "installCommand": "cd client && npm install",
+  "buildCommand": "cd client && npm run build",
+  "outputDirectory": "client/dist",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+- `framework: null` — tells Vercel this is a plain static site, not an SSR framework
+- `rewrites` — all paths serve `index.html` so React Router handles client-side navigation (clicking `/login`, `/projects`, etc. directly works)
+
+**Result:** https://construct-scenery-admin.vercel.app now serves the React login page correctly.
+
+---
+
+### Task 6 — Set Vercel environment variables ✅ COMPLETE
+
+**Portfolio** (`scenic-builds-elevated` Vercel project):
+- `VITE_API_URL` = `https://democrat-both-cross.ngrok-free.dev`
+- Set via: `vercel env add VITE_API_URL production` from `/Users/umairusman/scenic-builds-elevated`
+
+**Admin panel** (`construct-scenery-admin` Vercel project):
+- `VITE_API_URL` = `https://democrat-both-cross.ngrok-free.dev`
+- Set via: `vercel env add VITE_API_URL production` from `/Users/umairusman/construct-scenery-admin`
+
+**Vercel CLI** is installed: `brew install vercel-cli`  
+**Vercel account:** `umairusman617-3450` — already logged in on this machine.
+
+---
+
+### Task 7 — Updated admin CORS ALLOWED_ORIGINS ✅ COMPLETE
+
+**File:** `/Users/umairusman/construct-scenery-admin/.env`
+
+Added all Vercel production URLs so the API accepts requests from the deployed frontends:
+
+```
+ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:8080,http://localhost:8081,https://scenic-builds-elevated.vercel.app,https://constructscenery.vercel.app,https://construct-scenery-admin.vercel.app,https://construct-scenery-admin-umairusman617-3450s-projects.vercel.app"
+```
+
+**Important:** The API reads `ALLOWED_ORIGINS` once at startup. Changing `.env` requires a **full restart** of the API — `tsx watch` does NOT auto-reload on `.env` changes. Forgetting this caused the "network error" bug during this session.
+
+---
+
+## 4. Decisions Made and Why
 
 | Decision | Reason |
 |---|---|
-| **`imageResolver.ts` — map DB paths to Vite imports** | The seed stored `/assets/project-3.jpg` but Vite content-hashes asset filenames to `/assets/project-3.Dq8Z9Kab.jpg`. Rather than copying files to `public/`, we import every asset via Vite and map the raw path to the hashed URL. When a real Cloudinary URL is stored, `resolveUrl()` passes it through unchanged — zero code change needed when images are migrated. |
-| **`ApiSustainability` — flat shape, not nested** | The sustainability controller returns `{ ...sectionFields, items: [] }` (Prisma `include` inlines the relation). We initially typed it as `{ section: {...}, items: [] }` which crashed the whole page. Fixed to match the actual response. Always verify API shape before typing. |
-| **`worlds.$slug.tsx` loader fetches `/api/worlds` (all worlds) rather than `/api/worlds/:slug`** | We need both `world` and `next` in the loader. One call gives us both. There are only 3–10 worlds so payload is small. Avoids two parallel requests. |
-| **World auto-created with `visible: false`** | Ensures a half-filled world never goes live on the portfolio accidentally. Admin must explicitly toggle it visible. |
-| **`staleTime: 5 * 60_000` on all queries** | Portfolio content changes infrequently. 5 minutes avoids refetching on every page navigation while still picking up changes within a reasonable window. |
-| **`null` fallback on query error** | The portfolio should still render (mostly) if one section fails. A crashed section disappears cleanly rather than breaking the page. |
-| **Hero video stays as a local bundled asset** | The video is 15 MB+ and is not CMS-managed text. Storing it in Cloudinary is overkill; it is served directly from the portfolio bundle. |
+| **ngrok instead of Railway** | User wanted to keep the API running locally. ngrok exposes port 4000 via a public HTTPS URL without moving the database or server. |
+| **ngrok-skip-browser-warning header** | ngrok free tier intercepts browser-like requests with an interstitial page. The header bypasses it without requiring a paid plan. Added conditionally — only fires when the base URL contains "ngrok", so it self-removes when moving to a real API host. |
+| **vercel.json at admin repo root** | Vercel was deploying from repo root (Express API) instead of `client/` (React SPA). Adding `vercel.json` to the root is the correct way to override Vercel's build without changing the project's GitHub integration or dashboard settings. |
+| **`framework: null` in vercel.json** | Without this, Vercel detected the output directory and looked for a serverless function entrypoint. `null` tells it to treat the output as a plain static file directory. |
+| **SPA rewrite in vercel.json** | React Router handles all routes client-side. Without the rewrite, navigating directly to `/login` returns a 404 from Vercel's CDN since there's no `login.html` file. The catch-all rewrite serves `index.html` for every path. |
+| **CORS reads from .env at startup** | This is the existing Express CORS setup. The consequence is that every `.env` change requires a full API restart. A future improvement would be to reload from env on each request, but current volume doesn't justify it. |
+| **`WorldInput` type** | The `World` response type from the API has sub-relation arrays (`gallery`, `facts`, etc.) that include DB-generated `id` and `worldId` fields. The form payload doesn't have these — only the user-provided fields. `WorldInput` is `Partial<World>` with the sub-arrays typed without `id`/`worldId`. |
+| **`String(req.params.slug)` cast** | Newer Express type definitions type `req.params` values as `string | string[]`, though route params are always strings at runtime. Prisma's where clause only accepts `string`. `String()` is the cleanest cast — it's a no-op at runtime but satisfies the compiler. |
 
 ---
 
-## 4. Current File & Folder Structure
+## 5. Current File & Folder Structure
 
 ```
 /Users/umairusman/scenic-builds-elevated/     (PORTFOLIO — this repo)
 │
-├── .env                    ✅ Created (gitignored) — VITE_API_URL=http://localhost:4000
-├── .env.example            ✅ Committed — template for new machines
-├── .gitignore              ✅ Updated — added .env, .env.local
+├── .env                    ✅ VITE_API_URL=http://localhost:4000 (local dev)
+├── .env.example            ✅ Template
+├── .env.local              ✅ Created by Vercel CLI (gitignored) — do not edit
+├── vercel.json             ✅ { "framework": "tanstack-start" }
 │
 ├── src/
-│   ├── assets/             ✅ 11 local images + hero-set.jpg (all referenced via imageResolver)
-│   ├── videos/
-│   │   └── hero-set.mp4    ✅ Local bundled hero video
+│   ├── assets/             ✅ 11 local images still present (used by imageResolver fallback)
 │   │
 │   ├── lib/
-│   │   ├── worlds-data.ts  ✅ Types only + adaptApiWorld() — NO hardcoded data
-│   │   ├── api/
-│   │   │   ├── client.ts       ✅ apiFetch<T> — reads VITE_API_URL
-│   │   │   ├── types.ts        ✅ All API response interfaces
-│   │   │   ├── imageResolver.ts ✅ /assets/*.jpg → Vite hashed URL map
-│   │   │   ├── icons.ts        ✅ Lucide icon name string → component
-│   │   │   └── example.functions.ts  (pre-existing, unused — ignore)
-│   │   ├── utils.ts        (pre-existing, unchanged)
-│   │   └── config.server.ts (pre-existing, unchanged)
+│   │   ├── worlds-data.ts      ✅ Types only + adaptApiWorld() — no hardcoded data
+│   │   └── api/
+│   │       ├── client.ts       ✅ MODIFIED THIS SESSION — added ngrok bypass header
+│   │       ├── types.ts        ✅ All API response interfaces
+│   │       ├── imageResolver.ts ✅ /assets/*.jpg → Vite hashed URL (now a pass-through for all DB records since Cloudinary migration)
+│   │       └── icons.ts        ✅ Lucide icon name → component
 │   │
 │   ├── routes/
-│   │   ├── __root.tsx      ✅ Root layout with QueryClientProvider (unchanged)
-│   │   ├── index.tsx       ✅ Composes all landing sections (unchanged)
-│   │   └── worlds.$slug.tsx ✅ Async loader — fetches from API
+│   │   ├── __root.tsx          ✅ QueryClientProvider
+│   │   ├── index.tsx           ✅ Landing page
+│   │   └── worlds.$slug.tsx    ✅ Async loader from API
 │   │
-│   ├── components/
-│   │   ├── landing/
-│   │   │   ├── Hero.tsx          ✅ useQuery — dynamic text, local video
-│   │   │   ├── Logos.tsx         ✅ useQuery — supports image or text logos
-│   │   │   ├── About.tsx         ✅ useQuery — dynamic image, stats, pillars
-│   │   │   ├── Services.tsx      ✅ useQuery — icon resolved from string
-│   │   │   ├── Projects.tsx      ✅ useQuery — no worlds-data import
-│   │   │   ├── Process.tsx       ✅ useQuery — number/title/description
-│   │   │   ├── Testimonials.tsx  ✅ useQuery — imageUrl→image mapped
-│   │   │   ├── Sustainability.tsx ✅ useQuery — flat data shape (data.items)
-│   │   │   ├── FinalCTA.tsx      ✅ useQuery — mailto: CTAs from API
-│   │   │   ├── Footer.tsx        ✅ useQuery — columns JSON, social links
-│   │   │   └── Nav.tsx           ⚠️ Still hardcoded — no Nav model in DB
-│   │   │
-│   │   └── worlds/         ✅ All 7 components — receive World prop, unchanged
-│   │       ├── HeroSection.tsx
-│   │       ├── ProjectOverview.tsx
-│   │       ├── WorldGallery.tsx
-│   │       ├── ProcessNarrative.tsx
-│   │       ├── VimeoShowcase.tsx
-│   │       ├── ResultsStrip.tsx
-│   │       └── NextProjectNav.tsx
-│   │
-│   └── router.tsx          ✅ QueryClient created here, passed as context (unchanged)
+│   └── components/
+│       ├── landing/            ✅ All 10 sections use useQuery (Hero, Logos, About,
+│       │                          Services, Projects, Process, Testimonials,
+│       │                          Sustainability, FinalCTA, Footer)
+│       │   └── Nav.tsx         ⚠️ Still hardcoded — no NavSection model in DB
+│       └── worlds/             ✅ All 7 components receive World prop
 │
-└── (config files: vite.config.ts, tsconfig.json, package.json, etc.)
+└── (config: vite.config.ts, tsconfig.json, package.json)
 
 
 /Users/umairusman/construct-scenery-admin/    (ADMIN — separate repo)
 │
-├── .env                    ✅ All real credentials (gitignored)
-├── .gitignore              ✅ Updated — uploads/* ignored, uploads/.gitkeep tracked
-├── uploads/                ✅ Directory exists for local file uploads (contents gitignored)
-│   └── .gitkeep
+├── .env                    ✅ All real credentials (gitignored). ALLOWED_ORIGINS updated this session.
+├── .env.local              ✅ Created by Vercel CLI (gitignored)
+├── vercel.json             ✅ CREATED THIS SESSION — redirects build to client/
+├── .gitignore              ✅
 │
 ├── src/
-│   ├── app.ts              ✅ CORS updated + /uploads static serving added
-│   ├── controllers/
-│   │   ├── upload.controller.ts    ✅ Cloudinary upload (real credentials)
-│   │   ├── projects.controller.ts  ✅ Auto-creates World on project save with slug
-│   │   └── (11 other controllers — unchanged)
-│   └── (routes, middleware, schemas, lib — all unchanged)
+│   ├── app.ts              ✅ CORS + /uploads static serving
+│   └── controllers/
+│       ├── auth.controller.ts      ✅ FIXED THIS SESSION — jwt.sign type cast
+│       ├── worlds.controller.ts    ✅ FIXED THIS SESSION — req.params.slug cast (×5)
+│       ├── projects.controller.ts  ✅ Auto-creates World on project save with slug
+│       ├── upload.controller.ts    ✅ Cloudinary upload
+│       └── (10 other controllers — unchanged)
 │
-├── client/src/
-│   ├── pages/
-│   │   ├── Projects.tsx    ✅ BookOpen button → /worlds/:slug/edit; smart toast on create
-│   │   └── (14 other pages — unchanged)
-│   └── (api, components, context, types — unchanged)
+├── prisma/
+│   ├── schema.prisma       ✅ 19 models (unchanged)
+│   ├── seed.ts             ✅ Full seed (unchanged)
+│   ├── upload-images.ts    ✅ CREATED THIS SESSION — Cloudinary migration script
+│   └── migrations/         ✅ Applied
 │
-└── prisma/
-    ├── schema.prisma       ✅ 19 models (unchanged this session)
-    ├── seed.ts             ✅ Full seed (unchanged)
-    └── migrations/         ✅ Init migration applied
+├── uploads/                ✅ Directory for local uploads (gitignored contents)
+│   └── 5b4f8cca-...png     ✅ Clayface local upload (now also in Cloudinary)
+│   └── e2163831-...jpg     ✅ Aurora Pavilion local upload (now also in Cloudinary)
+│
+└── client/
+    ├── .vercel/            ✅ Created by Vercel CLI (gitignored)
+    ├── src/
+    │   ├── vite-env.d.ts   ✅ CREATED THIS SESSION — Vite type reference
+    │   ├── api/
+    │   │   ├── axios.ts    ✅ MODIFIED THIS SESSION — ngrok bypass header
+    │   │   └── worlds.ts   ✅ MODIFIED THIS SESSION — WorldInput type
+    │   └── types/
+    │       └── index.ts    ✅ MODIFIED THIS SESSION — added WorldInput type
+    └── (14 pages, components, context — unchanged)
 ```
 
 ---
 
-## 5. What Is Incomplete / Not Started
+## 6. What Is Incomplete / Not Started
 
 ### Critical
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | **Upload real Cloudinary images for existing content** | All seeded images are `/assets/project-*.jpg` paths that map to local Vite assets. This works locally but will break in production (Vercel won't have those assets accessible at those paths). Upload all images from `src/assets/` to Cloudinary, update records in the admin, and the `imageResolver.ts` will pass Cloudinary URLs straight through. |
-| 2 | **Deploy** | Neither the admin API nor the admin frontend are deployed. Portfolio is on Vercel. See Priority 2 below for full deployment steps. |
+| 1 | **ngrok URL changes on every restart** | Free ngrok gives a random URL. When it restarts, both Vercel projects need their `VITE_API_URL` updated and the API needs its CORS restarted. See Section 9 for the exact commands. Consider upgrading to ngrok paid (static domain) or deploying the API to Railway. |
+| 2 | **Admin API not deployed** | Runs locally on `:4000` only. If the machine sleeps or reboots, the portfolio and admin panel go dark. Deploying to Railway would eliminate this. |
 
 ### Important
 
 | # | Item | Notes |
 |---|---|---|
-| 3 | **Nav links are still hardcoded** | `src/components/landing/Nav.tsx` has a hardcoded `links` array. There is no `NavSection` model in the admin. Either add a model or leave as-is (nav links change rarely). |
-| 4 | **Footer social links are dead** | All three social links (Instagram, LinkedIn, Vimeo) are empty strings in the DB. The Footer component hides them when empty and falls back to `href="#"` links. Go to the admin Footer page and add real URLs. |
-| 5 | **Vimeo IDs are placeholder** | All three worlds use `vimeoId: "76979871"` (a generic placeholder). Update each world in the admin Worlds editor with real Vimeo video IDs. |
-| 6 | **5 projects have no case study** | Aurora Pavilion, Bloom Couture, Vanguard Awards, The Late Edit, Maison Pop-Up have no slug and no World. Either create worlds for them or leave them as `href="#contact"` enquiry links. |
-| 7 | **Security hardening before production** | Change `ADMIN_PASSWORD` from `admin123`. Change `JWT_SECRET` to a 64-char random string. Move JWT from `localStorage` to httpOnly cookies. Add `express-rate-limit` to `POST /api/auth/login`. |
-| 8 | **Admin dark mode** | Admin panel (`client/`) only has light mode CSS variables in `index.css`. No dark mode toggle. |
-| 9 | **Logo reorder UI** | Backend has `PUT /api/logos/reorder` but the admin Logos page has no drag-and-drop. Order is set via the number field in the edit dialog. |
-| 10 | **Admin user management** | Only one admin user exists (from seed). No UI to add users or reset the password. The `User` model exists in Prisma. |
+| 3 | **Nav links are still hardcoded** | `src/components/landing/Nav.tsx` has a hardcoded `links` array. No `NavSection` model in DB. |
+| 4 | **Footer social links are dead** | Instagram, LinkedIn, Vimeo are empty strings in the DB. Go to admin Footer page → add real URLs. |
+| 5 | **Vimeo IDs are placeholder** | All three worlds use `vimeoId: "76979871"`. Update each world in the admin Worlds editor with real Vimeo IDs. |
+| 6 | **5 projects have no case study** | Aurora Pavilion, Bloom Couture, Vanguard Awards, The Late Edit, Maison Pop-Up have no slug and no World. Either create worlds for them or leave as `href="#contact"`. |
+| 7 | **Security hardening before production** | `ADMIN_PASSWORD=admin123` is weak. `JWT_SECRET` is a placeholder. JWT stored in `localStorage` (vulnerable to XSS). No rate limiting on login. |
+| 8 | **Admin dark mode** | Admin `client/` only has light-mode CSS variables. No toggle. |
 
 ### Nice to Have
 
 | # | Item |
 |---|---|
-| 11 | Drag-and-drop reorder for all list sections |
-| 12 | Rich text editor for long body fields (world intro, process body) |
-| 13 | Preview link to live portfolio from each admin section |
-| 14 | Activity log / audit trail |
-| 15 | Dashboard singleton cards showing real populated/empty status |
-| 16 | Mobile hamburger menu in admin sidebar |
+| 9 | Drag-and-drop reorder for all list sections |
+| 10 | Rich text editor for long body fields |
+| 11 | Mobile hamburger menu in admin sidebar |
+| 12 | Dashboard cards showing real populated/empty status |
+| 13 | Write a `scripts/update-ngrok-url.sh` script that automates the URL-swap procedure (see Section 9) |
+| 14 | Admin user management UI |
 
 ---
 
-## 6. Known Bugs and Issues
+## 7. Known Bugs and Issues
 
-### Bug 1 — Sustainability data shape (FIXED this session)
-**Symptom:** Entire portfolio page showed "This page didn't load" (root error boundary).  
-**Root cause:** `ApiSustainability` was typed as `{ section: {...}, items: [] }` but the actual API response is a flat object `{ id, headline, bodyText, imageUrl, imageAlt, items: [] }`. Accessing `data.section.headline` threw, crashing the component tree.  
-**Fix applied:** Updated `src/lib/api/types.ts` and `src/components/landing/Sustainability.tsx` to use `data.headline`, `data.bodyText`, `data.items` directly.
+### Bug 1 — ngrok URL is ephemeral (KNOWN, not fixed by design)
+**Symptom:** After machine reboot or ngrok restart, portfolio and admin panel show network errors.  
+**Cause:** Free ngrok generates a random subdomain per session.  
+**Workaround:** Follow the URL-swap procedure in Section 9.  
+**Permanent fix:** Upgrade ngrok (paid static domain) or deploy API to Railway.
 
-### Bug 2 — CORS blocked all API calls (FIXED this session)
-**Symptom:** All API requests returned 500 in the browser network tab; `curl` worked fine.  
-**Root cause:** Portfolio dev server runs on port 8080/8081 but `ALLOWED_ORIGINS` only contained 5173/5174.  
-**Fix applied:** Added 8080 and 8081 to `ALLOWED_ORIGINS` in admin `.env`.
+### Bug 2 — API must be restarted to pick up .env changes (KNOWN)
+**File:** `/Users/umairusman/construct-scenery-admin/src/app.ts`  
+**Symptom:** Changing `ALLOWED_ORIGINS` in `.env` has no effect until the API is killed and restarted. `tsx watch` only watches TypeScript files, not `.env`.  
+**Workaround:** Always do `Ctrl+C` + `npm run dev` after `.env` changes. Killing the old process first: `lsof -ti :4000 | xargs kill -9`.
 
-### Bug 3 — World update replaces all relation rows on every save (KNOWN, unfixed)
+### Bug 3 — World update replaces all relation rows (KNOWN, from previous session)
 **File:** `src/controllers/worlds.controller.ts` → `updateWorld`  
-**Behaviour:** Every PUT to `/api/worlds/:slug` deletes and recreates gallery, facts, credits, process, results if included. Row IDs change on each save. Safe for current use but would break any external reference to sub-table IDs.
+**Behaviour:** Every PUT to `/api/worlds/:slug` deletes and recreates gallery, facts, credits, process, results. Row IDs change on every save.
 
-### Bug 4 — Footer columns JSON can break on bad input (KNOWN, unfixed)
-**File:** `client/src/pages/Footer.tsx` in admin  
+### Bug 4 — Footer columns JSON can break on bad input (KNOWN, from previous session)
+**File:** `client/src/pages/Footer.tsx`  
 **Symptom:** Invalid JSON in the columns textarea shows a toast error but no line indicator.
 
-### Bug 5 — No mobile layout in admin sidebar (KNOWN, unfixed)
+### Bug 5 — No mobile layout in admin sidebar (KNOWN)
 **File:** `client/src/components/layout/Sidebar.tsx`  
 **Symptom:** Admin panel is unusable on screens narrower than ~900px.
 
-### Bug 6 — Dashboard singleton cards don't show populated status (KNOWN, unfixed)
+### Bug 6 — Dashboard singleton cards don't show populated status (KNOWN)
 **File:** `client/src/pages/Dashboard.tsx`  
-**Symptom:** Hero/About/Contact/Footer/Sustainability cards always say "click to edit" regardless of whether they have real content.
+**Symptom:** Hero/About/Contact/Footer/Sustainability cards always say "click to edit".
 
 ---
 
-## 7. Environment Variables
+## 8. Environment Variables
 
 ### Portfolio — `/Users/umairusman/scenic-builds-elevated/.env` (gitignored)
 ```env
 VITE_API_URL=http://localhost:4000
 ```
-In production this becomes your deployed API URL, e.g.:
-```env
-VITE_API_URL=https://construct-scenery-admin.railway.app
-```
+On Vercel this is overridden to the ngrok URL via `vercel env`.
 
 ### Admin backend — `/Users/umairusman/construct-scenery-admin/.env` (gitignored)
 ```env
@@ -288,53 +353,73 @@ CLOUDINARY_API_KEY="773682671441411"
 CLOUDINARY_API_SECRET="kwkBAiW1Utm2yzFsj_UEA63HKSU"
 PORT=4000
 NODE_ENV="development"
-ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:8080,http://localhost:8081"
+ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:8080,http://localhost:8081,https://scenic-builds-elevated.vercel.app,https://constructscenery.vercel.app,https://construct-scenery-admin.vercel.app,https://construct-scenery-admin-umairusman617-3450s-projects.vercel.app"
 ADMIN_EMAIL="admin@constructscenery.co.uk"
 ADMIN_PASSWORD="admin123"
 ADMIN_NAME="Admin"
 ```
 
-### Admin frontend — `/Users/umairusman/construct-scenery-admin/client/.env` (gitignored)
-```env
-VITE_API_URL=http://localhost:4000
+### Admin frontend (Vercel env — not a file)
+Set via `vercel env` on the `construct-scenery-admin` Vercel project:
 ```
+VITE_API_URL=https://democrat-both-cross.ngrok-free.dev   ← changes on ngrok restart
+```
+
+### ngrok
+- Auth token: `3Fms98T1pqkgr4NAVFBhMlSPD6d_3234p6Zab8Nep33kVgH6r`
+- Config saved at: `/Users/umairusman/Library/Application Support/ngrok/ngrok.yml`
+- Already configured on this machine — `ngrok http 4000` just works.
 
 ---
 
-## 8. Commands to Run Everything
+## 9. Commands to Run Everything
 
 ### Prerequisites
 ```bash
 brew services start postgresql@16   # PostgreSQL must be running
-# gh CLI is at /opt/homebrew/bin/gh — add to PATH if needed
 export PATH="/opt/homebrew/bin:$PATH"
 ```
 
-### Starting the admin API (port 4000)
+### Start the admin API (port 4000) — MUST be running for everything else
 ```bash
+# Kill anything already on port 4000 first:
+lsof -ti :4000 | xargs kill -9 2>/dev/null; true
+
 cd /Users/umairusman/construct-scenery-admin
 npm run dev
+# Wait for: ✓ Server running on http://localhost:4000
 ```
 
-### Starting the admin frontend (port 5174)
+### Start the ngrok tunnel (in a separate terminal)
+```bash
+ngrok http 4000
+# Note the https URL (e.g. https://abc-123.ngrok-free.app) — you'll need it if it changed
+```
+
+### Start the admin frontend locally (optional — Vercel version is preferred)
 ```bash
 cd /Users/umairusman/construct-scenery-admin/client
 npm run dev
+# Available at http://localhost:5174
 ```
 
-### Starting the portfolio (port 8080)
+### Start the portfolio locally (optional)
 ```bash
 cd /Users/umairusman/scenic-builds-elevated
 npm run dev
+# Available at http://localhost:8080
 ```
 
-### All three URLs when running locally
-- Portfolio: http://localhost:8080
-- Admin panel: http://localhost:5174
-- Admin API: http://localhost:4000
-- API health check: http://localhost:4000/health
+### All URLs
+- Portfolio (local): http://localhost:8080
+- Portfolio (production): https://scenic-builds-elevated.vercel.app
+- Admin panel (local): http://localhost:5174
+- Admin panel (production): https://construct-scenery-admin.vercel.app
+- Admin API (local): http://localhost:4000
+- Admin API (via ngrok): https://democrat-both-cross.ngrok-free.dev
+- Health check: http://localhost:4000/health
 
-### Admin login credentials
+### Admin login
 ```
 Email:    admin@constructscenery.co.uk
 Password: admin123
@@ -344,134 +429,129 @@ Password: admin123
 ```bash
 cd /Users/umairusman/construct-scenery-admin
 
-# Browse DB in browser UI
-npm run db:studio
+npm run db:studio    # Browse database in browser UI (localhost:5555)
+npm run db:seed      # Re-seed with defaults (safe — upserts admin user)
+npm run db:reset     # DESTRUCTIVE — wipes everything except admin user
 
-# Reset all content to seed defaults (DESTRUCTIVE — wipes everything except admin user)
-npm run db:reset
-
-# Re-seed without resetting (safe, uses upsert for admin user)
-npm run db:seed
-
-# Create a new migration after changing schema.prisma
+# If you change prisma/schema.prisma:
 npx prisma migrate dev --name describe_your_change
 ```
 
-### First-time setup on a new machine
+---
+
+## 10. Procedure: Updating the ngrok URL (do this every time ngrok restarts)
+
+When ngrok restarts it gives a new URL. The new URL must be:
+1. Updated in both Vercel projects as `VITE_API_URL`
+2. Added to admin `ALLOWED_ORIGINS` (if the old URL was hardcoded there — it currently is not, only the `.vercel.app` domains are listed, so this step may be skippable)
+3. Redeployed on both Vercel projects
+
 ```bash
-# 1. Clone both repos
-git clone https://github.com/umairusman617-gif/scenic-builds-elevated.git
-git clone https://github.com/umairusman617-gif/construct-scenery-admin.git
+NEW_URL="https://YOUR-NEW-URL.ngrok-free.app"   # ← paste the new ngrok URL here
 
-# 2. Admin backend setup
-cd construct-scenery-admin
-cp .env.example .env          # then fill in all values
-npm install
-createdb construct_scenery_admin
-npx prisma generate
-npx prisma migrate dev --name init
-npm run db:seed
+# ── Portfolio Vercel project ──────────────────────────────────────────────────
+cd /Users/umairusman/scenic-builds-elevated
+vercel env rm VITE_API_URL production --yes
+echo "$NEW_URL" | vercel env add VITE_API_URL production
+vercel --prod
 
-# 3. Admin frontend setup
-cd client
-cp .env.example .env          # VITE_API_URL=http://localhost:4000
-npm install
-
-# 4. Portfolio setup
-cd ../../scenic-builds-elevated
-cp .env.example .env          # VITE_API_URL=http://localhost:4000
-npm install
+# ── Admin panel Vercel project ────────────────────────────────────────────────
+cd /Users/umairusman/construct-scenery-admin
+vercel env rm VITE_API_URL production --yes
+echo "$NEW_URL" | vercel env add VITE_API_URL production
+vercel --prod
 ```
 
+Both Vercel projects are already linked (`.vercel/` directories exist) and the CLI is authenticated. These commands run without interactive prompts.
+
 ---
 
-## 9. Next Steps (Priority Order)
+## 11. Next Steps (Priority Order)
 
-### Priority 1 — Upload images to Cloudinary (unblocks production)
+### Priority 1 — Eliminate the ngrok URL problem (MOST URGENT)
 
-The seeded image paths (`/assets/project-1.jpg` etc.) resolve correctly in local dev via `imageResolver.ts`. They will NOT work in production on Vercel because those files aren't served at those paths in a deployed build.
+Every machine reboot breaks production. Two options:
 
-**Steps:**
-1. Open the admin panel at http://localhost:5174
-2. Log in and go to each section (Projects, Worlds, About, Sustainability)
-3. Use the ImageUpload component to upload the corresponding image from `src/assets/`
-4. The component will upload to Cloudinary and store the `res.cloudinary.com` URL in the DB
-5. Once done, `imageResolver.ts` is bypassed for those entries — Cloudinary URLs pass through unchanged
+**Option A — ngrok paid plan (easiest, ~$8/mo)**
+1. Upgrade at https://dashboard.ngrok.com
+2. Claim a static domain: `ngrok http --domain=construct-scenery.ngrok.app 4000`
+3. Update both Vercel `VITE_API_URL` to the static domain (one-time)
+4. The URL never changes again
 
-**Images to upload:**
-- `src/assets/project-1.jpg` → used by Trespass Against Us hero + gallery
-- `src/assets/project-2.jpg` → used by Aurora Pavilion + You gallery
-- `src/assets/project-3.jpg` → used by Clayface hero + gallery
-- `src/assets/project-4.jpg` → used by Bloom Couture + Trespass gallery
-- `src/assets/project-5.jpg` → used by You hero + gallery
-- `src/assets/project-6.jpg` → used by Vanguard Awards + gallery
-- `src/assets/project-7.jpg` → used by The Late Edit
-- `src/assets/project-8.jpg` → used by Maison Pop-Up + gallery
-- `src/assets/about-craft.jpg` → About section + Clayface process step
-- `src/assets/sustainability.jpg` → Sustainability section + Trespass process step
-- `src/assets/hero-set.jpg` → Hero video poster (less critical — video plays over it)
+**Option B — Deploy API to Railway (proper, free tier available)**
+1. Create Railway account → new project → add PostgreSQL service
+2. Get the `DATABASE_URL` from Railway's PostgreSQL service
+3. Set all env vars on Railway (same as `.env` but with Railway's `DATABASE_URL` and production `JWT_SECRET`)
+4. Connect the `construct-scenery-admin` GitHub repo to Railway (auto-deploys)
+5. Railway will run `npm run build` then `npm start`
+6. Get the Railway API URL (e.g. `https://construct-scenery-admin.railway.app`)
+7. Update both Vercel `VITE_API_URL` to the Railway URL (one-time)
+8. Add the Railway URL to `ALLOWED_ORIGINS` — but since the API is now on Railway, CORS is not needed for the API itself (it's a server-to-server situation now — wait, no, the browser still calls the API directly, CORS is still needed)
+9. Run seed against production DB: `DATABASE_URL=<railway-url> npm run db:seed`
 
-### Priority 2 — Deploy
+### Priority 2 — Fill in dead content (can do anytime in the admin panel)
 
-**Recommended stack:**
-
-| Service | What |
-|---|---|
-| Railway | Admin API (Express) + PostgreSQL |
-| Vercel | Admin frontend (`client/`) |
-| Vercel | Portfolio (already here) |
-
-**Steps:**
-1. Create Railway project → add PostgreSQL service → get `DATABASE_URL`
-2. Deploy admin API to Railway — set all env vars (use production JWT_SECRET, change ADMIN_PASSWORD)
-3. Run seed against production DB: `DATABASE_URL=<prod> npm run db:seed`
-4. Deploy admin `client/` to Vercel — build command: `npm run build`, output: `dist`, env: `VITE_API_URL=https://your-api.railway.app`
-5. Update portfolio Vercel env: `VITE_API_URL=https://your-api.railway.app`
-6. Update admin `ALLOWED_ORIGINS` to include the deployed portfolio and admin frontend URLs
-7. Redeploy both
-
-### Priority 3 — Fill in dead content
-
-In the admin panel (http://localhost:5174):
+Go to https://construct-scenery-admin.vercel.app:
 - **Footer page** → add real Instagram, LinkedIn, Vimeo URLs
-- **Worlds editor (Clayface, You, Trespass)** → update `vimeoId` from `76979871` to real Vimeo video IDs
-- **Worlds editor** → add real intro text, gallery images, facts, credits, process steps, results for each world
-- **Projects** → decide on the 5 projects without case studies (Aurora Pavilion, Bloom Couture, Vanguard Awards, The Late Edit, Maison Pop-Up) — either create worlds for them or leave as enquiry links
+- **Worlds editor (Clayface, You, Trespass)** → update `vimeoId` from `76979871` to real Vimeo IDs
+- **Worlds editor** → add real intro text, gallery images, facts, credits, process steps, results
+- **Projects** → decide on Aurora Pavilion, Bloom Couture, Vanguard Awards, The Late Edit, Maison Pop-Up — create case study worlds or leave as enquiry links
 
-### Priority 4 — Security hardening (before real users hit production)
+### Priority 3 — Security hardening (before real users or real URLs go live)
 
-1. Generate new `JWT_SECRET`: `openssl rand -hex 64`
-2. Change `ADMIN_PASSWORD` to something strong (update in both `.env` and re-run seed or change via DB directly)
+1. Generate a real `JWT_SECRET`: `openssl rand -hex 64`
+2. Change `ADMIN_PASSWORD` to something strong (update `.env`, then re-seed or update via DB)
 3. Move JWT from `localStorage` to `httpOnly` cookies:
-   - Backend: remove `Authorization` header, set `Set-Cookie: token=...; HttpOnly; SameSite=Strict`
-   - Frontend: remove `localStorage` reads/writes in `AuthContext.tsx`, remove the axios interceptor that sets the header
-4. Add `express-rate-limit` to the login route in `src/routes/auth.routes.ts`
+   - Backend: set `Set-Cookie: token=...; HttpOnly; SameSite=Strict` instead of returning token in body
+   - Frontend: remove `localStorage` reads/writes in `AuthContext.tsx`, remove axios auth interceptor
+4. Add `express-rate-limit` to login route in `src/routes/auth.routes.ts`
 5. Add `helmet` middleware to `src/app.ts`
 
-### Priority 5 — Nav dynamic content
+### Priority 4 — Make Nav dynamic
 
-`src/components/landing/Nav.tsx` still has a hardcoded `links` array. To make it dynamic:
-- Add a `NavSection` singleton model to `prisma/schema.prisma` with a `links: Json` field
-- Run migration
-- Add controller + route (`GET /api/nav`)
-- Update `Nav.tsx` to `useQuery(["nav"])`
-- Add a Nav page to the admin panel
+`src/components/landing/Nav.tsx` still has a hardcoded `links` array:
+1. Add `NavSection` singleton model to `prisma/schema.prisma` with `links: Json`
+2. Run migration: `npx prisma migrate dev --name add_nav_section`
+3. Add controller + route (`GET /api/nav`)
+4. Update `Nav.tsx` to `useQuery(["nav"])` → `apiFetch<ApiNav>("/api/nav")`
+5. Add a Nav page to the admin panel
 
 ---
 
-## 10. Critical Context for the Next Session
+## 12. Critical Context for the Next Session
 
-### The imageResolver is the key to images working locally
-`src/lib/api/imageResolver.ts` maps plain `/assets/*.jpg` strings (stored in the DB) to Vite's content-hashed module imports. Without this, all images in the portfolio would be broken paths. Once Cloudinary URLs replace the seeded paths, this file becomes a no-op (pass-through). **Do not remove it** — it's still needed for any path that starts with `/assets/`.
+### The ngrok URL is currently active
+`https://democrat-both-cross.ngrok-free.dev` is the live tunnel. Both Vercel projects have this set as `VITE_API_URL`. If this URL stops working, follow the procedure in Section 10.
 
-### The Sustainability API response is flat — not nested
-`GET /api/sustainability` returns `{ id, headline, bodyText, imageUrl, imageAlt, items: [...] }` — the section fields and items are all at the top level. This was a bug earlier in the session (the type was wrong). `src/lib/api/types.ts` now correctly types it as `ApiSustainability` without a `section` wrapper.
+### The admin API MUST be running locally
+Without `npm run dev` running in `/Users/umairusman/construct-scenery-admin`, ALL production requests from the portfolio and admin panel fail. ngrok is just a tunnel — it requires the local server to be up.
 
-### Projects and Worlds are linked by slug
-When a project is saved with a slug in the admin, `ensureWorldExists()` runs automatically. It creates a hidden World draft pre-filled from the project. The World is never overwritten on subsequent project saves — it is only created if it doesn't exist. The admin Projects page has a `BookOpen` icon button per row to jump directly to the World editor for that slug.
+### `.env` changes require a manual API restart
+`tsx watch` only watches `.ts` files. After any `.env` change, kill the process (`lsof -ti :4000 | xargs kill -9`) and restart (`npm run dev`). Not doing this caused the "network error" bug during this session.
 
-### World update replaces all relation rows
-Every PUT to `/api/worlds/:slug` with a `gallery`, `facts`, `credits`, `process`, or `results` key deletes all existing rows for that relation and recreates them. This is intentional (no diffing). World sub-table IDs change on every save — don't store them externally.
+### imageResolver.ts is still needed but is now a pass-through
+`src/lib/api/imageResolver.ts` maps `/assets/*.jpg` → Vite hashed URLs. Since all DB records now use Cloudinary URLs, it's a no-op for all live data. But it's still needed:
+- If `npm run db:seed` is ever re-run (seed restores `/assets/` paths)
+- For any future locally-uploaded images before Cloudinary migration
+
+**Do not remove it.**
+
+### The Cloudinary migration script is idempotent
+`prisma/upload-images.ts` in the admin repo uses `overwrite: true`. Running it again re-uploads all local images to Cloudinary and updates DB records. Safe to re-run after a seed reset.
+
+### Vercel projects and their source
+| Vercel project | Source | Root dir |
+|---|---|---|
+| `scenic-builds-elevated` | `scenic-builds-elevated` GitHub repo | `/` (repo root — correct, it's a TanStack Start app) |
+| `construct-scenery-admin` | `construct-scenery-admin` GitHub repo | `/` (repo root) with `vercel.json` redirecting build to `client/` |
+
+The `construct-scenery-admin` Vercel project's GitHub auto-deploy will use `vercel.json` at the repo root, which correctly builds from `client/`. Do not delete `vercel.json` from the admin repo root.
+
+### Vercel CLI is installed and authenticated
+```bash
+vercel whoami   # should print: umairusman617-3450
+```
+Both projects are linked (`.vercel/` directories exist). `vercel --prod` from either project root deploys immediately without interactive prompts.
 
 ### PostgreSQL is local, must be running
 ```bash
@@ -480,17 +560,7 @@ brew services start postgresql@16
 # User: umairusman (no password)
 ```
 
-### Three servers must all be running for the full system
-- Port 4000: admin API (`npm run dev` in `/construct-scenery-admin`)
-- Port 5174: admin frontend (`npm run dev` in `/construct-scenery-admin/client`)
-- Port 8080+: portfolio (`npm run dev` in `/scenic-builds-elevated`)
-
-### Cloudinary account
-- Cloud: `dvzkh1nal`
-- Uploads go to the `construct-scenery` folder
-- Credentials are in the admin `.env` — do NOT commit this file
-
-### Git state
-- Portfolio (`scenic-builds-elevated`): last commit `0ab8973` — "Connect portfolio to admin API"
-- Admin (`construct-scenery-admin`): last commit `66d41c5` — "Wire Cloudinary uploads, link projects to world pages"
+### Git state at end of this session
+- Portfolio (`scenic-builds-elevated`): last commit `d20018d` — "Add ngrok-skip-browser-warning header"
+- Admin (`construct-scenery-admin`): last commit `709d8c4` — "Fix vercel.json: declare static framework and add SPA rewrite"
 - Both pushed to origin/main
