@@ -11,7 +11,7 @@ export function Hero() {
   const { data } = useQuery({
     queryKey: ["hero"],
     queryFn: () => apiFetch<ApiHero>("/api/hero"),
-    staleTime: 5 * 60_000,
+    staleTime: 20_000,
   });
 
   const rotating = data?.rotatingItems ?? [];
