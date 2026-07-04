@@ -13,9 +13,6 @@ export interface ApiHero {
   videoUrl: string | null;
   videoPoster: string | null;
   trustStats: { value: string; label: string }[];
-  logoVisible: boolean;
-  logoOpacity: number;
-  logoHeight: number;
 }
 
 export interface ApiLogo {

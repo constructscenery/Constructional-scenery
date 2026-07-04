@@ -8,6 +8,7 @@ export function FinalCTA() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["contact"],
     queryFn: () => apiFetch<ApiContact>("/api/contact"),
+    staleTime: 5 * 60_000,
   });
 
   return (

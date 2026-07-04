@@ -6,6 +6,7 @@ export function Logos() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["logos"],
     queryFn: () => apiFetch<ApiLogo[]>("/api/logos"),
+    staleTime: 5 * 60_000,
   });
 
   const logos = data?.filter((l) => l.visible) ?? [];

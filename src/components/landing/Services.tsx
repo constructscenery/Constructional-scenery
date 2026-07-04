@@ -9,6 +9,7 @@ export function Services() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["services"],
     queryFn: () => apiFetch<ApiService[]>("/api/services"),
+    staleTime: 5 * 60_000,
   });
 
   const services = data?.filter((s) => s.visible) ?? [];
@@ -80,9 +81,6 @@ export function Services() {
               </motion.a>
             );
           })}
-          {Array.from({ length: (3 - (services.length % 3)) % 3 }).map((_, i) => (
-            <div key={`fill-${i}`} className="bg-zinc-950" aria-hidden="true" />
-          ))}
         </div>
       </div>
     </section>

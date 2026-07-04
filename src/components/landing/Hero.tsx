@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, Play } from "lucide-react";
 import heroImg from "@/assets/hero-set.jpg";
-import logoImg from "@/assets/construct-logo-transparent.png";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiHero } from "@/lib/api/types";
 
@@ -11,6 +10,7 @@ export function Hero() {
   const { data } = useQuery({
     queryKey: ["hero"],
     queryFn: () => apiFetch<ApiHero>("/api/hero"),
+    staleTime: 5 * 60_000,
   });
 
   const rotating = data?.rotatingItems ?? [];
@@ -56,19 +56,6 @@ export function Hero() {
             'url("data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.6%22/></svg>")',
         }}
       />
-
-      {/* Logo — right side */}
-      {data?.logoVisible && (
-        <img
-          src={logoImg}
-          alt="Construct Scenery logo"
-          className="pointer-events-none absolute right-4 top-1/2 z-10 w-auto -translate-y-1/2 select-none object-contain md:right-10"
-          style={{
-            height: `min(${data.logoHeight}px, 32vw, 45vh)`,
-            opacity: data.logoOpacity,
-          }}
-        />
-      )}
 
       <div className="relative z-10 container-x flex min-h-[100svh] flex-col justify-between pt-32 pb-12">
         {/* eyebrow */}

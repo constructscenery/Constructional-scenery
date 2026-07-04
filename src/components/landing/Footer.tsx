@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiFooter } from "@/lib/api/types";
-import logo from "@/assets/construct_black_print_logo.jpg";
 
 export function Footer() {
   const { data } = useQuery({
     queryKey: ["footer"],
     queryFn: () => apiFetch<ApiFooter>("/api/footer"),
+    staleTime: 5 * 60_000,
   });
 
   const brandName = data?.brandName ?? "Construct/Scenery";
@@ -21,11 +21,6 @@ export function Footer() {
       <div className="container-x py-20">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
-            <img
-              src={logo}
-              alt="Construct Scenery"
-              className="h-20 w-20 rounded-full object-cover invert mb-5"
-            />
             <div className="font-display text-2xl tracking-tight">
               {brandName.includes("/") ? (
                 <>
