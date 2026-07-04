@@ -11,7 +11,6 @@ export function Projects() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["projects"],
     queryFn: () => apiFetch<ApiProject[]>("/api/projects"),
-    staleTime: 5 * 60_000,
   });
 
   const [showAll, setShowAll] = useState(false);
@@ -61,7 +60,7 @@ export function Projects() {
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-[260px] md:auto-rows-[320px] gap-4 md:gap-6">
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {visible.map((p, idx) => {
               const Cmp: any = p.slug ? Link : "a";
               const linkProps = p.slug

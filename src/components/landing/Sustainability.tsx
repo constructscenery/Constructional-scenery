@@ -9,7 +9,6 @@ export function Sustainability() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["sustainability"],
     queryFn: () => apiFetch<ApiSustainability>("/api/sustainability"),
-    staleTime: 5 * 60_000,
   });
 
   if (isPending) {
@@ -93,6 +92,9 @@ export function Sustainability() {
                   </motion.div>
                 );
               })}
+              {data.items.length % 2 !== 0 && (
+                <div className="bg-background" aria-hidden="true" />
+              )}
             </div>
           </div>
         </div>

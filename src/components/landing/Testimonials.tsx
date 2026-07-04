@@ -8,7 +8,6 @@ export function Testimonials() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["testimonials"],
     queryFn: () => apiFetch<ApiTestimonial[]>("/api/testimonials"),
-    staleTime: 5 * 60_000,
   });
 
   const all = (data?.filter((t) => t.visible) ?? []).map((t) => ({

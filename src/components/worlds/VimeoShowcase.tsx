@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Play } from "lucide-react";
 import type { World } from "@/lib/worlds-data";
 
 export function VimeoShowcase({ world }: { world: World }) {
   const [playing, setPlaying] = useState(false);
+  const [thumbnail, setThumbnail] = useState<string>(world.heroImage);
+
+  useEffect(() => {
+    if (!world.vimeoId) return;
+    fetch(
+      `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${world.vimeoId}&width=1920`
+    )
+      .then((r) => r.json())
+      .then((d) => { if (d.thumbnail_url) setThumbnail(d.thumbnail_url); })
+      .catch(() => {});
+  }, [world.vimeoId]);
 
   return (
     <section className="bg-background py-32 md:py-48">
@@ -40,7 +51,7 @@ export function VimeoShowcase({ world }: { world: World }) {
           ) : (
             <>
               <img
-                src={world.heroImage}
+                src={thumbnail}
                 alt={`${world.title} — video poster`}
                 className="absolute inset-0 h-full w-full object-cover opacity-70"
               />

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import logo from "@/assets/construct_black_print_logo.jpg";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -35,8 +36,13 @@ export function Nav() {
             className={`flex items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 glass shadow-elevated`}
           >
             <Link to="/" className="flex items-center gap-2 group">
+              <img
+                src={logo}
+                alt="Construct Scenery"
+                className="h-9 w-9 rounded-full object-cover dark:invert transition-opacity group-hover:opacity-80"
+              />
               <span className="font-display text-base tracking-tight text-ink">
-                Construct<span className="text-chrome">/</span>Scenery
+                Construct Scenery
               </span>
             </Link>
             <nav className="hidden md:flex items-center gap-8">

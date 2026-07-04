@@ -8,7 +8,6 @@ export function About() {
   const { data, isPending, isError } = useQuery({
     queryKey: ["about"],
     queryFn: () => apiFetch<ApiAbout>("/api/about"),
-    staleTime: 5 * 60_000,
   });
 
   if (isPending) {
