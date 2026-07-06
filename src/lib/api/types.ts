@@ -36,15 +36,6 @@ export interface ApiAbout {
   pillars: { title: string; description: string }[];
 }
 
-export interface ApiService {
-  id: number;
-  title: string;
-  description: string;
-  iconName: string;
-  order: number;
-  visible: boolean;
-}
-
 export interface ApiProject {
   id: number;
   name: string;

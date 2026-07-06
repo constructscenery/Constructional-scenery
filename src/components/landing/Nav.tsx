@@ -14,7 +14,6 @@ export function Nav() {
 
   const links = [
     { href: "#work", label: "Work" },
-    { href: "#services", label: "Services" },
     { href: "#process", label: "Process" },
     { href: "#about", label: "Studio" },
     { href: "#contact", label: "Contact" },
