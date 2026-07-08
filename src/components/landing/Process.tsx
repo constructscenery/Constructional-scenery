@@ -1,13 +1,13 @@
-import { useRef } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "motion/react";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiProcessStep } from "@/lib/api/types";
 
 export function Process() {
-  const ref = useRef<HTMLDivElement>(null);
+  const [ref, setRef] = useState<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: ref ? { current: ref } : undefined,
     offset: ["start 80%", "end 20%"],
   });
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
@@ -63,7 +63,7 @@ export function Process() {
           </h2>
         </motion.div>
 
-        <div ref={ref} className="relative grid gap-12 md:gap-20">
+        <div ref={setRef} className="relative grid gap-12 md:gap-20">
           {/* timeline rail */}
           <div className="absolute left-[18px] md:left-1/2 top-2 bottom-2 w-px bg-border md:-translate-x-1/2">
             <motion.div style={{ height: lineHeight }} className="w-px bg-ink origin-top" />
