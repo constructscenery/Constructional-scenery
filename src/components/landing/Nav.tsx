@@ -35,7 +35,7 @@ export function Nav() {
           >
             <Link to="/" className="flex items-center gap-2 group">
               <span className="font-display text-base tracking-tight text-ink">
-                Construct<span className="text-chrome">/</span>Scenery
+                Construct Scenery
               </span>
             </Link>
             <nav className="hidden md:flex items-center gap-8">
