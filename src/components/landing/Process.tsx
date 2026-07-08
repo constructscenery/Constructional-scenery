@@ -20,7 +20,7 @@ export function Process() {
 
   if (isPending) {
     return (
-      <section id="process" className="bg-fog py-32 md:py-48">
+      <section id="process" className="bg-fog pt-16 pb-32 md:pt-24 md:pb-48">
         <div className="container-x animate-pulse space-y-16">
           <div className="max-w-3xl space-y-4">
             <div className="h-3 w-20 rounded bg-muted/40" />
@@ -46,7 +46,7 @@ export function Process() {
   if (isError || !data || data.length === 0) return null;
 
   return (
-    <section id="process" className="bg-fog py-32 md:py-48">
+    <section id="process" className="bg-fog pt-16 pb-32 md:pt-24 md:pb-48">
       <div className="container-x">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

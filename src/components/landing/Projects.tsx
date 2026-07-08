@@ -21,7 +21,7 @@ export function Projects() {
 
   if (isPending) {
     return (
-      <section id="work" className="bg-background py-32 md:py-48">
+      <section id="work" className="bg-background pt-32 pb-16 md:pt-48 md:pb-24">
         <div className="container-x animate-pulse space-y-12">
           <div className="space-y-4">
             <div className="h-3 w-28 rounded bg-muted/40" />
@@ -40,7 +40,7 @@ export function Projects() {
   if (isError || allProjects.length === 0) return null;
 
   return (
-    <section id="work" className="bg-background py-32 md:py-48">
+    <section id="work" className="bg-background pt-32 pb-16 md:pt-48 md:pb-24">
       <div className="container-x">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
