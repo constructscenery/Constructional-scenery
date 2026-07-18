@@ -19,7 +19,7 @@ export function Logos() {
         </p>
 
         {isPending ? (
-          <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4 md:grid-cols-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-12">
             {Array.from({ length: 8 }).map((_, k) => (
               <div key={k} className="flex items-center justify-center">
                 <div className="h-6 w-20 animate-pulse rounded bg-muted/40" />
@@ -27,7 +27,7 @@ export function Logos() {
             ))}
           </div>
         ) : isError || logos.length === 0 ? null : (
-          <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4 md:grid-cols-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-12">
             {logos.map((l) => (
               <div key={l.id} className="group flex items-center justify-center">
                 {l.imageUrl ? (
