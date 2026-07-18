@@ -6,6 +6,7 @@ export type WorldStat = { value: string; label: string };
 export type WorldProcess = { title: string; body: string; image: string };
 
 export type World = {
+  id: number;
   slug: string;
   title: string;
   summary: string;
@@ -25,6 +26,7 @@ export type World = {
 
 export function adaptApiWorld(w: ApiWorld): World {
   return {
+    id: w.id,
     slug: w.slug,
     title: w.title,
     summary: w.summary,

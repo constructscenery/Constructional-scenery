@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
 import { HeroSection } from "@/components/worlds/HeroSection";
@@ -12,13 +12,33 @@ import { apiFetch } from "@/lib/api/client";
 import type { ApiWorld } from "@/lib/api/types";
 import { adaptApiWorld } from "@/lib/worlds-data";
 
+function normalizeWorldSlug(slug: string) {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
 export const Route = createFileRoute("/worlds/$slug")({
   loader: async ({ params }) => {
     const apiWorlds = await apiFetch<ApiWorld[]>("/api/worlds");
-    const idx = apiWorlds.findIndex((w) => w.slug === params.slug);
+    const requestedSlug = normalizeWorldSlug(params.slug);
+    const idx = apiWorlds.findIndex((w) => w.slug === requestedSlug);
     if (idx === -1) throw notFound();
+
     const world = adaptApiWorld(apiWorlds[idx]);
-    const next = adaptApiWorld(apiWorlds[(idx + 1) % apiWorlds.length]);
+
+    if (params.slug !== world.slug) {
+      throw redirect({
+        to: "/worlds/$slug",
+        params: { slug: world.slug },
+        replace: true,
+      });
+    }
+
+    const nextIndex = apiWorlds.findIndex((candidate) => candidate.id === world.id);
+    const next = adaptApiWorld(apiWorlds[(nextIndex + 1) % apiWorlds.length]);
     return { world, next };
   },
   head: ({ loaderData }) => {
