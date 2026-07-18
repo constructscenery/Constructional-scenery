@@ -4,9 +4,7 @@ import { Footer } from "@/components/landing/Footer";
 import { HeroSection } from "@/components/worlds/HeroSection";
 import { ProjectOverview } from "@/components/worlds/ProjectOverview";
 import { WorldGallery } from "@/components/worlds/WorldGallery";
-import { ProcessNarrative } from "@/components/worlds/ProcessNarrative";
 import { VimeoShowcase } from "@/components/worlds/VimeoShowcase";
-import { ResultsStrip } from "@/components/worlds/ResultsStrip";
 import { NextProjectNav } from "@/components/worlds/NextProjectNav";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiWorld } from "@/lib/api/types";
@@ -73,9 +71,7 @@ function WorldPage() {
       <HeroSection world={world} />
       <ProjectOverview world={world} />
       <WorldGallery world={world} />
-      <ProcessNarrative world={world} />
       <VimeoShowcase world={world} />
-      <ResultsStrip world={world} />
       <NextProjectNav next={next} />
       <Footer />
     </main>

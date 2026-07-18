@@ -10,7 +10,7 @@ export type World = {
   slug: string;
   title: string;
   summary: string;
-  role: string;
+  role?: string;
   year: string;
   tags: string[];
   category: string;
@@ -20,8 +20,8 @@ export type World = {
   intro: string;
   facts: { label: string; value: string }[];
   credits?: WorldCredit[];
-  process: WorldProcess[];
-  results: WorldStat[];
+  process?: WorldProcess[];
+  results?: WorldStat[];
 };
 
 export function adaptApiWorld(w: ApiWorld): World {
@@ -35,16 +35,16 @@ export function adaptApiWorld(w: ApiWorld): World {
     tags: w.tags,
     category: w.category,
     heroImage: resolveUrl(w.heroImage),
-    gallery: w.gallery.map((g) => resolveUrl(g.url)),
+    gallery: (w.gallery ?? []).map((g) => resolveUrl(g.url)),
     vimeoId: w.vimeoId,
     intro: w.intro,
-    facts: w.facts.map((f) => ({ label: f.label, value: f.value })),
-    credits: w.credits.map((c) => ({ role: c.role, name: c.name })),
-    process: w.process.map((p) => ({
+    facts: (w.facts ?? []).map((f) => ({ label: f.label, value: f.value })),
+    credits: (w.credits ?? []).map((c) => ({ role: c.role, name: c.name })),
+    process: (w.process ?? []).map((p) => ({
       title: p.title,
       body: p.body,
       image: resolveUrl(p.imageUrl),
     })),
-    results: w.results.map((r) => ({ value: r.value, label: r.label })),
+    results: (w.results ?? []).map((r) => ({ value: r.value, label: r.label })),
   };
 }

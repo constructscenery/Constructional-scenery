@@ -56,10 +56,6 @@ export function HeroSection({ world }: { world: World }) {
           className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-white/10 pt-6 text-[11px] uppercase tracking-[0.25em] text-white/55"
         >
           <div>
-            <div className="text-white/40">Role</div>
-            <div className="mt-1 text-white/85 normal-case tracking-normal text-sm">{world.role}</div>
-          </div>
-          <div>
             <div className="text-white/40">Year</div>
             <div className="mt-1 text-white/85 normal-case tracking-normal text-sm">{world.year}</div>
           </div>

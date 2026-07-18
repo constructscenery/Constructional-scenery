@@ -149,18 +149,18 @@ export interface ApiWorld {
   slug: string;
   title: string;
   summary: string;
-  role: string;
+  role?: string;
   year: string;
   tags: string[];
   category: string;
   heroImage: string;
   vimeoId: string;
   intro: string;
-  gallery: ApiWorldImage[];
-  facts: ApiWorldFact[];
-  credits: ApiWorldCredit[];
-  process: ApiWorldProcess[];
-  results: ApiWorldResult[];
+  gallery?: ApiWorldImage[];
+  facts?: ApiWorldFact[];
+  credits?: ApiWorldCredit[];
+  process?: ApiWorldProcess[];
+  results?: ApiWorldResult[];
   order: number;
   visible: boolean;
 }

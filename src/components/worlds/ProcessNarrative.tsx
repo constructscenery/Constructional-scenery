@@ -2,6 +2,8 @@ import { motion } from "motion/react";
 import type { World } from "@/lib/worlds-data";
 
 export function ProcessNarrative({ world }: { world: World }) {
+  if (!world.process?.length) return null;
+
   return (
     <section className="bg-background py-32 md:py-48">
       <div className="container-x">
