@@ -12,25 +12,38 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+import { motion } from "motion/react";
+import { Nav } from "../components/landing/Nav";
+
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
+    <main className="bg-background text-foreground flex flex-col min-h-screen">
+      <Nav />
+      <div className="flex-1 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 text-center max-w-2xl"
+        >
+          <p className="mb-6 text-[11px] uppercase tracking-[0.3em] text-chrome">404 Error</p>
+          <h1 className="font-display text-5xl md:text-7xl tracking-tight text-ink text-balance mb-6">
+            Lost in the workshop.
+          </h1>
+          <p className="text-base md:text-lg text-ink-soft mb-10 max-w-md mx-auto">
+            The page or case study you're looking for doesn't exist, has been moved, or is still under construction.
+          </p>
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-full bg-ink px-8 py-3.5 text-sm font-medium text-background transition-transform hover:scale-105 active:scale-95 shadow-elevated"
           >
-            Go home
+            Back to Home
           </Link>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -128,11 +141,36 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { useRouterState } from "@tanstack/react-router";
+
+function GlobalLoader() {
+  const isPending = useRouterState({ select: (s) => s.status === 'pending' });
+  if (!isPending) return null;
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+    >
+      <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        className="h-10 w-10 rounded-full border-2 border-chrome border-t-ink mb-6 relative z-10"
+      />
+      <p className="text-[11px] uppercase tracking-[0.3em] text-chrome relative z-10 animate-pulse">Loading World</p>
+    </motion.div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
+      <GlobalLoader />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>

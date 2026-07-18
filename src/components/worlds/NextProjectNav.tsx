@@ -5,7 +5,7 @@ import type { World } from "@/lib/worlds-data";
 
 export function NextProjectNav({ next }: { next: World }) {
   return (
-    <section className="bg-background py-24 md:py-32">
+    <section id="suggestions" className="bg-background py-24 md:py-32">
       <div className="container-x">
         <Link
           to="/worlds/$slug"

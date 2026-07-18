@@ -17,7 +17,7 @@ export function Footer() {
   const vimeo = data?.vimeo || null;
 
   return (
-    <footer className="bg-zinc-950 text-white">
+    <footer id="contact" className="bg-zinc-950 text-white">
       <div className="container-x py-20">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">

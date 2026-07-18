@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -12,12 +12,23 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = [
-    { href: "#work", label: "Work" },
-    { href: "#process", label: "Process" },
-    { href: "#about", label: "Studio" },
-    { href: "#contact", label: "Contact" },
-  ];
+  const location = useLocation();
+  const isWorld = location.pathname.startsWith("/worlds/");
+
+  const links = isWorld
+    ? [
+        { href: "#overview", label: "Overview" },
+        { href: "#explore", label: "Explore" },
+        { href: "#motion", label: "Motion" },
+        { href: "#suggestions", label: "Suggestions" },
+        { href: "#contact", label: "Contact" },
+      ]
+    : [
+        { href: "#work", label: "Work" },
+        { href: "#process", label: "Process" },
+        { href: "#about", label: "Studio" },
+        { href: "#contact", label: "Contact" },
+      ];
 
   return (
     <AnimatePresence>

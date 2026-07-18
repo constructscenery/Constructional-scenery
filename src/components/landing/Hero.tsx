@@ -33,16 +33,35 @@ export function Hero() {
         transition={{ duration: 14, ease: "easeOut" }}
         className="absolute inset-0"
       >
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={heroImg}
-          className="h-full w-full object-cover opacity-70"
-        >
-          <source src="/videos/hero-set.mp4" type="video/mp4" />
-        </video>
+        {data?.mediaType === "image" && data?.heroImageUrl ? (
+          /* ── Static image background ── */
+          <img
+            src={data.heroImageUrl}
+            alt="Hero background"
+            className="h-full w-full object-cover opacity-70"
+          />
+        ) : (
+          /* ── Video background (default) ──
+             key forces a re-mount when the S3 URL changes so the browser
+             actually loads the new source instead of keeping the old one */
+          <video
+            key={data?.videoUrl ?? "local"}
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={data?.videoPoster ?? heroImg}
+            className="h-full w-full object-cover opacity-70"
+          >
+            {data?.videoUrl ? (
+              <source src={data.videoUrl} type="video/mp4" />
+            ) : (
+              /* Local bundle fallback — used only when API has no URL set */
+              <source src="/videos/hero-set.mp4" type="video/mp4" />
+            )}
+          </video>
+        )}
+
       </motion.div>
 
       {/* Overlays */}

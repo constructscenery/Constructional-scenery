@@ -60,11 +60,7 @@ export const Route = createFileRoute("/worlds/$slug")({
       ],
     };
   },
-  notFoundComponent: () => (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <p className="text-ink-soft">World not found.</p>
-    </div>
-  ),
+
   component: WorldPage,
 });
 

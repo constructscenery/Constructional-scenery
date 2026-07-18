@@ -10,8 +10,10 @@ export interface ApiHero {
   cta1Href: string;
   cta2Label: string;
   cta2Href: string;
+  mediaType: "video" | "image";
   videoUrl: string | null;
   videoPoster: string | null;
+  heroImageUrl: string | null;
   trustStats: { value: string; label: string }[];
   logoVisible: boolean;
   logoOpacity: number;

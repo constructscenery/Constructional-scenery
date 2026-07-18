@@ -6,7 +6,7 @@ export function ProjectOverview({ world }: { world: World }) {
   const hasCredits = (world.credits?.length ?? 0) > 0;
 
   return (
-    <section className="bg-background py-32 md:py-48">
+    <section id="overview" className="bg-background py-32 md:py-48">
       <div className="container-x grid gap-16 md:grid-cols-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

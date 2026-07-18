@@ -21,7 +21,7 @@ export function WorldGallery({ world }: { world: World }) {
   };
 
   return (
-    <section className="relative bg-background py-24 md:py-32">
+    <section id="explore" className="relative bg-background py-24 md:py-32">
       <div className="container-x">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

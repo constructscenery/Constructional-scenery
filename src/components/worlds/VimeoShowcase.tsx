@@ -7,7 +7,7 @@ export function VimeoShowcase({ world }: { world: World }) {
   const [playing, setPlaying] = useState(false);
 
   return (
-    <section className="bg-background py-32 md:py-48">
+    <section id="motion" className="bg-background py-32 md:py-48">
       <div className="container-x">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
