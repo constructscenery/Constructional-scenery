@@ -142,26 +142,30 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 import { useRouterState } from "@tanstack/react-router";
+import { AnimatePresence } from "motion/react";
 
 function GlobalLoader() {
-  const isPending = useRouterState({ select: (s) => s.status === 'pending' });
-  if (!isPending) return null;
+  const isLoading = useRouterState({ select: (s) => s.isLoading });
   
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
-    >
-      <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-        className="h-10 w-10 rounded-full border-2 border-chrome border-t-ink mb-6 relative z-10"
-      />
-      <p className="text-[11px] uppercase tracking-[0.3em] text-chrome relative z-10 animate-pulse">Loading World</p>
-    </motion.div>
+    <AnimatePresence>
+      {isLoading && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+        >
+          <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            className="h-10 w-10 rounded-full border-2 border-chrome border-t-ink mb-6 relative z-10"
+          />
+          <p className="text-[11px] uppercase tracking-[0.3em] text-chrome relative z-10 animate-pulse">Loading World</p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
