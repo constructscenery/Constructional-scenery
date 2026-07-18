@@ -21,11 +21,14 @@ function normalizeWorldSlug(slug: string) {
 export const Route = createFileRoute("/worlds/$slug")({
   loader: async ({ params }) => {
     const apiWorlds = await apiFetch<ApiWorld[]>("/api/worlds");
+    const publicWorlds = apiWorlds.filter((w) => w.visible);
+    if (publicWorlds.length === 0) throw notFound();
+
     const requestedSlug = normalizeWorldSlug(params.slug);
-    const idx = apiWorlds.findIndex((w) => w.slug === requestedSlug);
+    const idx = publicWorlds.findIndex((w) => w.slug === requestedSlug);
     if (idx === -1) throw notFound();
 
-    const world = adaptApiWorld(apiWorlds[idx]);
+    const world = adaptApiWorld(publicWorlds[idx]);
 
     if (params.slug !== world.slug) {
       throw redirect({
@@ -35,8 +38,10 @@ export const Route = createFileRoute("/worlds/$slug")({
       });
     }
 
-    const nextIndex = apiWorlds.findIndex((candidate) => candidate.id === world.id);
-    const next = adaptApiWorld(apiWorlds[(nextIndex + 1) % apiWorlds.length]);
+    const next = publicWorlds.length > 1
+      ? adaptApiWorld(publicWorlds[(idx + 1) % publicWorlds.length])
+      : null;
+
     return { world, next };
   },
   head: ({ loaderData }) => {
@@ -72,7 +77,7 @@ function WorldPage() {
       <ProjectOverview world={world} />
       <WorldGallery world={world} />
       <VimeoShowcase world={world} />
-      <NextProjectNav next={next} />
+      {next ? <NextProjectNav next={next} /> : null}
       <Footer />
     </main>
   );
