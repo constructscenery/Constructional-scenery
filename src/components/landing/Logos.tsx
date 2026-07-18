@@ -35,7 +35,7 @@ export function Logos() {
                     src={l.imageUrl}
                     alt={l.name}
                     loading="lazy"
-                    className="max-h-8 w-auto grayscale opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105"
+                    className="max-h-12 md:max-h-16 w-auto max-w-[140px] md:max-w-[180px] object-contain grayscale opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105"
                   />
                 ) : (
                   <span className="font-display text-xl md:text-2xl text-chrome/70 grayscale transition-all duration-500 group-hover:text-ink group-hover:scale-105">
