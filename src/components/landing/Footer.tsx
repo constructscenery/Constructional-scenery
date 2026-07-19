@@ -37,7 +37,7 @@ export function Footer() {
                   <img
                     src="/LogoWhite.png"
                     alt="Construct Scenery Logo"
-                    className="h-32 w-32 object-contain opacity-90 mix-blend-screen [clip-path:circle(48%)]"
+                    className="h-48 w-48 object-contain opacity-90 mix-blend-screen [clip-path:circle(48%)]"
                   />
                 </div>
               </div>
