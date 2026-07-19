@@ -126,7 +126,7 @@ export function Hero() {
                       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                       exit={{ opacity: 0, y: -24, filter: "blur(8px)" }}
                       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                      className="inline-block text-white/60 italic font-normal text-[clamp(28px,4vw,72px)]"
+                      className="inline-block text-white/60 font-normal text-[clamp(28px,4vw,72px)]"
                     >
                       {rotating[i]}
                     </motion.span>

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiFooter } from "@/lib/api/types";
-import skullLogo from "@/assets/construct-logo-transparent.png";
 
 export function Footer() {
   const { data } = useQuery({
@@ -36,9 +35,9 @@ export function Footer() {
               <div className="mt-8 mb-6">
                 <div className="inline-flex items-center justify-center rounded-full border border-white/20 p-6 bg-white/5 transition-colors hover:bg-white/10">
                   <img
-                    src={skullLogo}
+                    src="/LogoWhite.png"
                     alt="Construct Scenery Logo"
-                    className="h-32 w-32 object-contain filter invert brightness-0 opacity-90"
+                    className="h-32 w-32 object-contain opacity-90 mix-blend-screen [clip-path:circle(48%)]"
                   />
                 </div>
               </div>
@@ -51,13 +50,19 @@ export function Footer() {
             <div key={c.title} className="md:col-span-2">
               <div className="text-[11px] uppercase tracking-[0.25em] text-white/40 mb-5">{c.title}</div>
               <ul className="space-y-3">
-                {c.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-white/80 hover:text-white transition-colors">
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {c.links.map((link: any) => {
+                  const isString = typeof link === "string";
+                  const label = isString ? link : link.label;
+                  const url = isString ? "#" : link.url;
+                  
+                  return (
+                    <li key={label}>
+                      <a href={url} className="text-sm text-white/80 hover:text-white transition-colors">
+                        {label}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -68,7 +73,7 @@ export function Footer() {
           <div className="flex gap-6">
             {instagram && (
               <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                Instagram
+                IMDB
               </a>
             )}
             {linkedin && (

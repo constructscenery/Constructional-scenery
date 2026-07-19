@@ -96,9 +96,14 @@ export interface ApiContact {
   cta2Email: string;
 }
 
+export interface ApiFooterColumnLink {
+  label: string;
+  url: string;
+}
+
 export interface ApiFooterColumn {
   title: string;
-  links: string[];
+  links: ApiFooterColumnLink[];
 }
 
 export interface ApiFooter {
