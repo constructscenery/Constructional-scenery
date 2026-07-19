@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiFooter } from "@/lib/api/types";
+import skullLogo from "@/assets/construct-logo-transparent.png";
 
 export function Footer() {
   const { data } = useQuery({
@@ -10,7 +11,6 @@ export function Footer() {
   });
 
   const brandName = data?.brandName ?? "Construct/Scenery";
-  const tagline = data?.tagline ?? "";
   const columns = (data?.columns ?? []) as { title: string; links: string[] }[];
   const instagram = data?.instagram || null;
   const linkedin = data?.linkedin || null;
@@ -20,35 +20,31 @@ export function Footer() {
     <footer id="contact" className="bg-zinc-950 text-white">
       <div className="container-x py-20">
         <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <div className="font-display text-2xl tracking-tight">
-              {brandName.includes("/") ? (
-                <>
-                  {brandName.split("/")[0]}
-                  <span className="text-white/40">/</span>
-                  {brandName.split("/")[1]}
-                </>
-              ) : (
-                brandName
-              )}
+          <div className="md:col-span-4 flex flex-col md:items-start">
+            <div className="flex flex-col items-center">
+              <div className="font-display text-2xl tracking-tight">
+                {brandName.includes("/") ? (
+                  <>
+                    {brandName.split("/")[0]}
+                    <span className="text-white/40">/</span>
+                    {brandName.split("/")[1]}
+                  </>
+                ) : (
+                  brandName
+                )}
+              </div>
+              <div className="mt-8 mb-6">
+                <div className="inline-flex items-center justify-center rounded-full border border-white/20 p-6 bg-white/5 transition-colors hover:bg-white/10">
+                  <img
+                    src={skullLogo}
+                    alt="Construct Scenery Logo"
+                    className="h-32 w-32 object-contain filter invert brightness-0 opacity-90"
+                  />
+                </div>
+              </div>
             </div>
-            {tagline && (
-              <p className="mt-6 max-w-xs text-sm text-white/60 leading-relaxed">{tagline}</p>
-            )}
 
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-8 flex items-center gap-2 rounded-full border border-white/15 p-1.5 max-w-sm"
-            >
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 bg-transparent px-3 py-1.5 text-sm text-white placeholder:text-white/40 outline-none"
-              />
-              <button className="rounded-full bg-white text-black text-xs font-medium px-4 py-2 hover:bg-white/90 transition">
-                Subscribe
-              </button>
-            </form>
+
           </div>
 
           {columns.map((c) => (
@@ -85,13 +81,7 @@ export function Footer() {
                 Vimeo
               </a>
             )}
-            {!instagram && !linkedin && !vimeo && (
-              <>
-                <a href="#" className="hover:text-white">Instagram</a>
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">Vimeo</a>
-              </>
-            )}
+
           </div>
         </div>
       </div>

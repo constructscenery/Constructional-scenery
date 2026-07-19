@@ -17,7 +17,7 @@ export function Projects() {
   const [showAll, setShowAll] = useState(false);
 
   const allProjects = data?.filter((p) => p.visible) ?? [];
-  const visible = showAll ? allProjects : allProjects.slice(0, 6);
+  const visible = showAll ? allProjects : allProjects.slice(0, 12);
 
   if (isPending) {
     return (
@@ -74,7 +74,7 @@ export function Projects() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.7, delay: (idx % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.7, delay: (idx % 12) * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   className={`group relative overflow-hidden rounded-2xl bg-fog ${p.span ?? ""}`}
                 >
                   <Cmp {...linkProps} className="absolute inset-0 block">
@@ -106,7 +106,7 @@ export function Projects() {
           </AnimatePresence>
         </div>
 
-        {!showAll && allProjects.length > 6 && (
+        {!showAll && allProjects.length > 12 && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
