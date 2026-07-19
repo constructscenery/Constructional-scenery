@@ -33,11 +33,11 @@ export function Footer() {
                 )}
               </div>
               <div className="mt-8 mb-6">
-                <div className="inline-flex items-center justify-center rounded-full border border-white/20 p-6 bg-white/5 transition-colors hover:bg-white/10">
+                <div className="inline-flex items-center justify-center rounded-full border border-white/20 p-0 bg-white/5 transition-colors hover:bg-white/10 h-64 w-64 overflow-hidden">
                   <img
                     src="/LogoWhite.png"
                     alt="Construct Scenery Logo"
-                    className="h-48 w-48 object-contain opacity-90 mix-blend-screen [clip-path:circle(48%)]"
+                    className="h-full w-full object-cover opacity-90 mix-blend-screen scale-[1.12]"
                   />
                 </div>
               </div>
