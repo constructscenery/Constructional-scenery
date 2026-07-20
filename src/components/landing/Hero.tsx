@@ -20,7 +20,7 @@ export function Hero() {
 
   useEffect(() => {
     if (!rotating.length) return;
-    const t = setInterval(() => setI((v) => (v + 1) % rotating.length), 2400);
+    const t = setInterval(() => setI((v) => (v + 1) % rotating.length), 4000);
     return () => clearInterval(t);
   }, [rotating.length]);
 

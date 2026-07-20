@@ -10,8 +10,8 @@ export function WorldGallery({ world }: { world: World }) {
   const rowA = images.slice(0, half);
   const rowB = images.slice(half).concat(images.slice(0, Math.max(0, half - (images.length - half))));
   const rows: { items: string[]; velocity: number }[] = [
-    { items: [...rowA, ...rowA], velocity: 1.2 },
-    { items: [...rowB, ...rowB], velocity: -1.2 },
+    { items: [...rowA, ...rowA], velocity: 0.6 },
+    { items: [...rowB, ...rowB], velocity: -0.6 },
   ];
 
   const apiRefs = [useRef<ScrollVelocityHandle>(null), useRef<ScrollVelocityHandle>(null)];

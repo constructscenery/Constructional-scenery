@@ -86,7 +86,7 @@ export function Projects() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-x-0 bottom-0 p-6 md:p-8 text-white">
-                      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.25em] text-white/60 mb-2">
+                      <div className="flex items-center justify-between text-[10px] tracking-[0.25em] text-white/60 mb-2">
                         <span>{p.type}</span>
                         <span>{p.year}</span>
                       </div>
