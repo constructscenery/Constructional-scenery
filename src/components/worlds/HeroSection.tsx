@@ -59,16 +59,6 @@ export function HeroSection({ world }: { world: World }) {
             <div className="text-white/40">Year</div>
             <div className="mt-1 text-white/85 normal-case tracking-normal text-sm">{world.year}</div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {world.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-white/20 px-3 py-1 text-[10px] tracking-[0.2em] text-white/70"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
         </motion.div>
       </div>
 

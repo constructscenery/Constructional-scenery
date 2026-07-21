@@ -17,13 +17,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Premium UK scenic construction for film, television, brands and live experiences. From concept to camera-ready.",
+          "Uk set construction for film and television",
       },
       { property: "og:title", content: "Construct Scenery — We Build Worlds" },
       {
         property: "og:description",
         content:
-          "Premium UK scenic construction for film, television, brands and live experiences.",
+          "Uk set construction for film and television",
       },
     ],
   }),
