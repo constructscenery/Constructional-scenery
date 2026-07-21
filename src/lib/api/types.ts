@@ -171,3 +171,12 @@ export interface ApiWorld {
   order: number;
   visible: boolean;
 }
+
+export interface ApiBio {
+  id: number;
+  name: string;
+  role: string;
+  description: string;
+  imageUrl: string | null;
+  links: { label: string; url: string }[];
+}

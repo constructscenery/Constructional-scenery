@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BioRouteImport } from './routes/bio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorldsSlugRouteImport } from './routes/worlds.$slug'
 
+const BioRoute = BioRouteImport.update({
+  id: '/bio',
+  path: '/bio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,32 +31,43 @@ const WorldsSlugRoute = WorldsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bio': typeof BioRoute
   '/worlds/$slug': typeof WorldsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bio': typeof BioRoute
   '/worlds/$slug': typeof WorldsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bio': typeof BioRoute
   '/worlds/$slug': typeof WorldsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/worlds/$slug'
+  fullPaths: '/' | '/bio' | '/worlds/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/worlds/$slug'
-  id: '__root__' | '/' | '/worlds/$slug'
+  to: '/' | '/bio' | '/worlds/$slug'
+  id: '__root__' | '/' | '/bio' | '/worlds/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BioRoute: typeof BioRoute
   WorldsSlugRoute: typeof WorldsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/bio': {
+      id: '/bio'
+      path: '/bio'
+      fullPath: '/bio'
+      preLoaderRoute: typeof BioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BioRoute: BioRoute,
   WorldsSlugRoute: WorldsSlugRoute,
 }
 export const routeTree = rootRouteImport

@@ -12,3 +12,5 @@ export async function apiFetch<T>(path: string): Promise<T> {
   if (!json.success) throw new Error(json.message ?? "API error");
   return json.data as T;
 }
+
+export const getBio = () => apiFetch<import('./types').ApiBio>("/api/bio");
