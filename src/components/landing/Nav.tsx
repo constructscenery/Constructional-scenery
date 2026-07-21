@@ -13,21 +13,22 @@ export function Nav() {
   }, []);
 
   const location = useLocation();
+  const isHome = location.pathname === "/";
   const isWorld = location.pathname.startsWith("/worlds/");
 
   const links = isWorld
     ? [
-        { href: "#overview", label: "Overview" },
-        { href: "#explore", label: "Explore" },
-        { href: "#motion", label: "Motion" },
-        { href: "#suggestions", label: "Suggestions" },
-        { href: "#contact", label: "Contact" },
+        { href: isHome ? "#overview" : "/#overview", label: "Overview" },
+        { href: isHome ? "#explore" : "/#explore", label: "Explore" },
+        { href: isHome ? "#motion" : "/#motion", label: "Motion" },
+        { href: isHome ? "#suggestions" : "/#suggestions", label: "Suggestions" },
+        { href: isHome ? "#contact" : "/#contact", label: "Contact" },
       ]
     : [
-        { href: "#work", label: "Work" },
-        { href: "#process", label: "Process" },
-        { href: "#about", label: "Studio" },
-        { href: "#contact", label: "Contact" },
+        { href: isHome ? "#work" : "/#work", label: "Work" },
+        { href: isHome ? "#process" : "/#process", label: "Process" },
+        { href: isHome ? "#about" : "/#about", label: "Studio" },
+        { href: isHome ? "#contact" : "/#contact", label: "Contact" },
       ];
 
   return (
@@ -63,7 +64,7 @@ export function Nav() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <a
-                href="#contact"
+                href={isHome ? "#contact" : "/#contact"}
                 className="rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-background hover:opacity-90 transition"
               >
                 Start a project

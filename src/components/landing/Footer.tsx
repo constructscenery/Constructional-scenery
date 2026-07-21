@@ -68,25 +68,37 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/40">
+        <div className="mt-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/50">
           <div>© {new Date().getFullYear()} Construct Scenery Ltd. All rights reserved.</div>
-          <div className="flex gap-6">
-            {instagram && (
-              <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                IMDB
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="flex gap-6">
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  IMDB
+                </a>
+              )}
+              {linkedin && (
+                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  LinkedIn
+                </a>
+              )}
+              {vimeo && (
+                <a href={vimeo} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  Vimeo
+                </a>
+              )}
+            </div>
+            <div className="text-white/60">
+              Developed by :{" "}
+              <a
+                href="https://www.alpha-devs.cloud/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-white hover:text-white hover:underline transition-colors"
+              >
+                Alpha Devs
               </a>
-            )}
-            {linkedin && (
-              <a href={linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                LinkedIn
-              </a>
-            )}
-            {vimeo && (
-              <a href={vimeo} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                Vimeo
-              </a>
-            )}
-
+            </div>
           </div>
         </div>
       </div>

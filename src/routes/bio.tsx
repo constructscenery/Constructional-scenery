@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getBio } from "@/lib/api/client";
 import { Nav } from "@/components/landing/Nav";
+import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/bio")({
   component: BioPage,
@@ -30,57 +31,61 @@ function BioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Nav />
-      
-      <main className="container-x relative pt-32 pb-24 md:pt-48">
-        <div className="mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[85%] max-w-6xl text-center">
-          {bio.imageUrl && (
-            <img
-              src={bio.imageUrl}
-              alt={bio.name}
-              className="mx-auto h-32 w-32 rounded-full object-cover shadow-elevated md:h-40 md:w-40"
-            />
-          )}
-          
-          <h1 className="font-display mt-8 text-4xl font-semibold tracking-tight md:text-5xl">
-            {bio.name}
-          </h1>
-          <p className="mt-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-            {bio.role}
-          </p>
-          
-          <p className="mt-8 text-lg leading-relaxed text-foreground/80 md:text-xl">
-            {bio.description}
-          </p>
+    <div className="min-h-screen bg-background flex flex-col justify-between">
+      <div>
+        <Nav />
+        
+        <main className="container-x relative pt-32 pb-24 md:pt-48">
+          <div className="mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[85%] max-w-6xl text-center">
+            {bio.imageUrl && (
+              <img
+                src={bio.imageUrl}
+                alt={bio.name}
+                className="mx-auto h-32 w-32 rounded-full object-cover shadow-elevated md:h-40 md:w-40"
+              />
+            )}
+            
+            <h1 className="font-display mt-8 text-4xl font-semibold tracking-tight md:text-5xl">
+              {bio.name}
+            </h1>
+            <p className="mt-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
+              {bio.role}
+            </p>
+            
+            <p className="mt-8 text-lg leading-relaxed text-foreground/80 md:text-xl">
+              {bio.description}
+            </p>
 
-          {bio.links.length > 0 && (
-            <div className="mt-12 flex flex-col gap-4 max-w-xl mx-auto w-full">
-              {bio.links.map((link, i) => (
-                <a
-                  key={i}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex w-full items-center justify-between overflow-hidden rounded-full border border-border bg-card px-8 py-5 transition-all hover:border-foreground"
-                >
-                  <span className="font-display text-lg font-medium transition-transform group-hover:translate-x-2">
-                    {link.label}
-                  </span>
-                  <svg
-                    className="h-5 w-5 opacity-0 transition-all group-hover:opacity-100 group-hover:-translate-x-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {bio.links.length > 0 && (
+              <div className="mt-12 flex flex-col gap-4 max-w-xl mx-auto w-full">
+                {bio.links.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex w-full items-center justify-between overflow-hidden rounded-full border border-border bg-card px-8 py-5 transition-all hover:border-foreground"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+                    <span className="font-display text-lg font-medium transition-transform group-hover:translate-x-2">
+                      {link.label}
+                    </span>
+                    <svg
+                      className="h-5 w-5 opacity-0 transition-all group-hover:opacity-100 group-hover:-translate-x-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+
+      <Footer />
     </div>
   );
 }

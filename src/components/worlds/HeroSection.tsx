@@ -14,20 +14,20 @@ export function HeroSection({ world }: { world: World }) {
         <img
           src={world.heroImage}
           alt={`${world.title} — hero still`}
-          className="h-full w-full object-cover opacity-75"
+          className="h-full w-full object-cover opacity-90"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/20" />
 
       <div className="relative z-10 container-x flex min-h-[100svh] flex-col justify-end pt-32 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.8 }}
-          className="flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-white/55"
+          className="flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-white/80 font-medium"
         >
-          <span className="h-px w-10 bg-white/40" />
+          <span className="h-px w-10 bg-white/60" />
           {world.category} · {world.year}
         </motion.div>
 
@@ -44,7 +44,7 @@ export function HeroSection({ world }: { world: World }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.9 }}
-          className="mt-6 max-w-2xl text-lg md:text-2xl text-white/80 leading-snug text-balance"
+          className="mt-6 max-w-2xl text-lg md:text-2xl text-white/95 leading-snug text-balance font-medium"
         >
           {world.summary}
         </motion.p>
@@ -53,11 +53,11 @@ export function HeroSection({ world }: { world: World }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 1 }}
-          className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-white/10 pt-6 text-[11px] uppercase tracking-[0.25em] text-white/55"
+          className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-white/20 pt-6 text-[11px] uppercase tracking-[0.25em] text-white/70"
         >
           <div>
-            <div className="text-white/40">Year</div>
-            <div className="mt-1 text-white/85 normal-case tracking-normal text-sm">{world.year}</div>
+            <div className="text-white/60">Year</div>
+            <div className="mt-1 text-white font-medium normal-case tracking-normal text-sm">{world.year}</div>
           </div>
         </motion.div>
       </div>
