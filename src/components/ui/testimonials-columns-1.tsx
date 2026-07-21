@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 
 type Testimonial = {
   text: string;
-  image: string;
+  image?: string | null;
   name: string;
   role: string;
 };
@@ -34,14 +34,16 @@ export const TestimonialsColumn = (props: {
               >
                 <div className="text-ink-soft leading-relaxed">{text}</div>
                 <div className="flex items-center gap-3 mt-6">
-                  <img
-                    width={44}
-                    height={44}
-                    src={image}
-                    alt={name}
-                    loading="lazy"
-                    className="h-11 w-11 rounded-full object-cover"
-                  />
+                  {image ? (
+                    <img
+                      width={44}
+                      height={44}
+                      src={image}
+                      alt={name}
+                      loading="lazy"
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                  ) : null}
                   <div className="flex flex-col">
                     <div className="font-medium tracking-tight leading-5 text-ink">{name}</div>
                     <div className="leading-5 text-chrome text-sm tracking-tight">{role}</div>
