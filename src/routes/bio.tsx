@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getBio } from "@/lib/api/client";
-import { Navigation } from "@/components/layout/Navigation";
+import { Nav } from "@/components/landing/Nav";
 
 export const Route = createFileRoute("/bio")({
   component: BioPage,
@@ -31,7 +31,7 @@ function BioPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <Nav />
       
       <main className="container-x relative pt-32 pb-24 md:pt-48">
         <div className="mx-auto max-w-2xl text-center">
