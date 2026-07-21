@@ -33,38 +33,38 @@ function BioPage() {
     <div className="min-h-screen bg-background">
       <Nav />
       
-      <main className="container-x relative pt-24 pb-20 md:pt-36 md:pb-28">
-        <div className="mx-auto w-[92%] sm:w-[88%] md:w-[80%] max-w-5xl text-center">
+      <main className="container-x relative pt-32 pb-24 md:pt-48">
+        <div className="mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[85%] max-w-6xl text-center">
           {bio.imageUrl && (
             <img
               src={bio.imageUrl}
               alt={bio.name}
-              className="mx-auto h-32 w-32 rounded-full object-cover shadow-elevated border-2 border-border/80 md:h-44 md:w-44 transition-transform hover:scale-105"
+              className="mx-auto h-32 w-32 rounded-full object-cover shadow-elevated md:h-40 md:w-40"
             />
           )}
           
-          <h1 className="font-display mt-6 md:mt-8 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+          <h1 className="font-display mt-8 text-4xl font-semibold tracking-tight md:text-5xl">
             {bio.name}
           </h1>
-          <p className="mt-2 text-xs sm:text-sm uppercase tracking-[0.25em] text-muted-foreground font-medium">
+          <p className="mt-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
             {bio.role}
           </p>
           
-          <div className="mt-8 md:mt-12 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed md:leading-loose text-foreground/90 font-normal text-center">
+          <p className="mt-8 text-lg leading-relaxed text-foreground/80 md:text-xl">
             {bio.description}
-          </div>
+          </p>
 
           {bio.links.length > 0 && (
-            <div className="mt-12 md:mt-16 flex flex-col gap-4 max-w-xl mx-auto w-full">
+            <div className="mt-12 flex flex-col gap-4 max-w-xl mx-auto w-full">
               {bio.links.map((link, i) => (
                 <a
                   key={i}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative flex w-full items-center justify-between overflow-hidden rounded-full border border-border bg-card px-6 sm:px-8 py-4 sm:py-5 transition-all hover:border-foreground hover:shadow-lg"
+                  className="group relative flex w-full items-center justify-between overflow-hidden rounded-full border border-border bg-card px-8 py-5 transition-all hover:border-foreground"
                 >
-                  <span className="font-display text-base sm:text-lg font-medium transition-transform group-hover:translate-x-2">
+                  <span className="font-display text-lg font-medium transition-transform group-hover:translate-x-2">
                     {link.label}
                   </span>
                   <svg

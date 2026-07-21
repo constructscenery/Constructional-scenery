@@ -68,7 +68,7 @@ Both the admin API and admin client had TypeScript errors that blocked Vercel's 
 | File | Error | Fix |
 |---|---|---|
 | `src/controllers/auth.controller.ts` | `jwt.sign()` — newer `@types/jsonwebtoken` uses branded `StringValue` type for `expiresIn`, so a plain `string` env var doesn't match | Assigned options to a typed-as-`any` variable before passing to `jwt.sign()` |
-| `src/controllers/worlds.controller.ts` (×5 places) | `req.params.slug` typed as `string \| string[]` in this Express version — Prisma `where` only accepts `string` | Wrapped all `req.params.slug` usages in `String()` cast |
+| `src/controllers/worlds.controller.ts` (×5 places) | `req.params` values typed as `string \| string[]` in this Express version; worlds routes now accept `:id` for mutations and `:idOrSlug` for lookup | Wrapped param usages in `String()` and parsed numeric IDs where needed |
 
 **Admin client fixes** (`/Users/umairusman/construct-scenery-admin/client/`):
 
@@ -191,7 +191,28 @@ ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:80
 | **SPA rewrite in vercel.json** | React Router handles all routes client-side. Without the rewrite, navigating directly to `/login` returns a 404 from Vercel's CDN since there's no `login.html` file. The catch-all rewrite serves `index.html` for every path. |
 | **CORS reads from .env at startup** | This is the existing Express CORS setup. The consequence is that every `.env` change requires a full API restart. A future improvement would be to reload from env on each request, but current volume doesn't justify it. |
 | **`WorldInput` type** | The `World` response type from the API has sub-relation arrays (`gallery`, `facts`, etc.) that include DB-generated `id` and `worldId` fields. The form payload doesn't have these — only the user-provided fields. `WorldInput` is `Partial<World>` with the sub-arrays typed without `id`/`worldId`. |
-| **`String(req.params.slug)` cast** | Newer Express type definitions type `req.params` values as `string | string[]`, though route params are always strings at runtime. Prisma's where clause only accepts `string`. `String()` is the cleanest cast — it's a no-op at runtime but satisfies the compiler. |
+| **`String(req.params.id)` / `String(req.params.idOrSlug)` cast** | Newer Express type definitions type `req.params` values as `string | string[]`, though route params are strings at runtime. Prisma `where` clauses accept `string` or `number` based on the field. `String()` plus explicit parse for numeric IDs keeps typing clear. |
+
+---
+
+## 4.1 Worlds API Contract Update (Important)
+
+Please note that the worlds API now uses the record ID for update/delete operations. The slug remains the public URL value, but it is no longer the stable identifier for mutation requests. Any admin-side edit links, mutation calls, and cache invalidation logic should be updated to use the world ID rather than the slug.
+
+### Endpoint contract
+
+- `PUT /api/worlds/:id` (was `:slug`)
+- `DELETE /api/worlds/:id` (was `:slug`)
+- `GET /api/worlds/:id`
+- `GET /api/worlds/:slug`
+
+### Frontend implications
+
+- Keep public case-study URLs slug-based (`/worlds/:slug`).
+- Use world `id` for admin edit routes (`/worlds/:id/edit`), mutations, and cache invalidation.
+- Treat slug as mutable. After slug edits, do not rely on previously cached slug values as stable identity keys.
+- World payload is now simplified: core fields plus `gallery`, `facts`, and `credits` are supported nested sections.
+- `role`, `process`, and `results` are no longer part of the required request/response contract.
 
 ---
 
@@ -242,7 +263,7 @@ ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:80
 │   ├── app.ts              ✅ CORS + /uploads static serving
 │   └── controllers/
 │       ├── auth.controller.ts      ✅ FIXED THIS SESSION — jwt.sign type cast
-│       ├── worlds.controller.ts    ✅ FIXED THIS SESSION — req.params.slug cast (×5)
+│       ├── worlds.controller.ts    ✅ FIXED THIS SESSION — request param typing/casts updated for `:id` and `:idOrSlug`
 │       ├── projects.controller.ts  ✅ Auto-creates World on project save with slug
 │       ├── upload.controller.ts    ✅ Cloudinary upload
 │       └── (10 other controllers — unchanged)
@@ -319,7 +340,7 @@ ALLOWED_ORIGINS="http://localhost:5174,http://localhost:5173,http://localhost:80
 
 ### Bug 3 — World update replaces all relation rows (KNOWN, from previous session)
 **File:** `src/controllers/worlds.controller.ts` → `updateWorld`  
-**Behaviour:** Every PUT to `/api/worlds/:slug` deletes and recreates gallery, facts, credits, process, results. Row IDs change on every save.
+**Behaviour:** Every PUT to `/api/worlds/:id` deletes and recreates gallery, facts, credits, process, results. Row IDs change on every save.
 
 ### Bug 4 — Footer columns JSON can break on bad input (KNOWN, from previous session)
 **File:** `client/src/pages/Footer.tsx`  

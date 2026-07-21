@@ -38,7 +38,7 @@ export function Hero() {
           <img
             src={data.heroImageUrl}
             alt="Hero background"
-            className="h-full w-full object-cover opacity-70"
+            className="h-full w-full object-cover opacity-90"
           />
         ) : (
           /* ── Video background (default) ──
@@ -51,7 +51,7 @@ export function Hero() {
             loop
             playsInline
             poster={data?.videoPoster ?? heroImg}
-            className="h-full w-full object-cover opacity-70"
+            className="h-full w-full object-cover opacity-90"
           >
             {data?.videoUrl ? (
               <source src={data.videoUrl} type="video/mp4" />
@@ -65,12 +65,12 @@ export function Hero() {
       </motion.div>
 
       {/* Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/80" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/10" />
 
       {/* Grain */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
+        className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay"
         style={{
           backgroundImage:
             'url("data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.6%22/></svg>")',
@@ -96,9 +96,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-white/60"
+          className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-white/90 font-medium"
         >
-          <span className="h-px w-10 bg-white/40" />
+          <span className="h-px w-10 bg-white/60" />
           {data ? (
             data.eyebrow
           ) : (
@@ -126,7 +126,7 @@ export function Hero() {
                       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                       exit={{ opacity: 0, y: -24, filter: "blur(8px)" }}
                       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                      className="inline-block text-white/60 font-normal text-[clamp(28px,4vw,72px)]"
+                      className="inline-block text-white/85 font-normal text-[clamp(28px,4vw,72px)]"
                     >
                       {rotating[i]}
                     </motion.span>
@@ -138,7 +138,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.9 }}
-                className="mt-8 max-w-xl text-base md:text-lg text-white/70 leading-relaxed"
+                className="mt-8 max-w-xl text-base md:text-lg text-white/95 leading-relaxed font-medium"
               >
                 {data.bodyText}
               </motion.p>
@@ -151,7 +151,7 @@ export function Hero() {
               >
                 <a
                   href={data.cta1Href}
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black transition hover:bg-white/90"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black transition hover:bg-white/90 shadow-lg"
                 >
                   {data.cta1Label}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -185,13 +185,13 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 1 }}
-          className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-12 border-t border-white/10 pt-8"
+          className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-12 border-t border-white/20 pt-8"
         >
           {trustStats.length > 0
             ? trustStats.map((s) => (
                 <div key={s.label}>
-                  <div className="font-display text-3xl md:text-4xl">{s.value}</div>
-                  <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/50">{s.label}</div>
+                  <div className="font-display text-3xl md:text-4xl text-white font-bold">{s.value}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/80 font-medium">{s.label}</div>
                 </div>
               ))
             : Array.from({ length: 4 }).map((_, k) => (
