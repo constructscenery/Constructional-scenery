@@ -170,6 +170,7 @@ export interface ApiWorld {
   results?: ApiWorldResult[];
   order: number;
   visible: boolean;
+  updatedAt: string;
 }
 
 export interface ApiBio {

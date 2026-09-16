@@ -5,6 +5,12 @@ export type WorldCredit = { role: string; name: string };
 export type WorldStat = { value: string; label: string };
 export type WorldProcess = { title: string; body: string; image: string };
 
+function withCacheVersion(url: string, version: string): string {
+  if (!url) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${encodeURIComponent(version)}`;
+}
+
 export type World = {
   id: number;
   slug: string;
@@ -25,6 +31,8 @@ export type World = {
 };
 
 export function adaptApiWorld(w: ApiWorld): World {
+  const heroImage = resolveUrl(w.heroImage);
+
   return {
     id: w.id,
     slug: w.slug,
@@ -34,7 +42,7 @@ export function adaptApiWorld(w: ApiWorld): World {
     year: w.year,
     tags: w.tags,
     category: w.category,
-    heroImage: resolveUrl(w.heroImage),
+    heroImage: withCacheVersion(heroImage, w.updatedAt),
     gallery: (w.gallery ?? []).map((g) => resolveUrl(g.url)),
     vimeoId: w.vimeoId,
     intro: w.intro,

@@ -79,7 +79,7 @@ export function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="text-lg md:text-xl text-ink-soft leading-relaxed"
+              className="whitespace-pre-line text-lg md:text-xl text-ink-soft leading-relaxed"
             >
               {data.bodyText}
             </motion.p>
