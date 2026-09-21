@@ -81,7 +81,9 @@ export function Process() {
               }`}
             >
               <div className="md:[direction:ltr] pl-12 md:pl-0 md:pr-12 md:text-right">
-                <div className="font-display text-7xl md:text-9xl text-ink/10 leading-none">{step.number}</div>
+                <div className="font-display text-7xl md:text-9xl text-ink/10 leading-none">
+                  {step.number}
+                </div>
               </div>
               <div className="md:[direction:ltr] pl-12 md:pl-12">
                 <div className="absolute left-0 md:left-1/2 top-1 h-9 w-9 -translate-x-0 md:-translate-x-1/2 rounded-full bg-background border border-border flex items-center justify-center">

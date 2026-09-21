@@ -80,7 +80,7 @@
   --foreground: oklch(0.98 0 0);
   --ink: oklch(0.98 0 0);
   --ink-soft: oklch(0.85 0.005 270);
-  --fog: oklch(0.20 0.005 270);
+  --fog: oklch(0.2 0.005 270);
   --chrome: oklch(0.6 0.01 270);
   --card: oklch(0.16 0.005 270);
   --card-foreground: oklch(0.98 0 0);
@@ -165,8 +165,12 @@
 }
 
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -174,6 +178,10 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }

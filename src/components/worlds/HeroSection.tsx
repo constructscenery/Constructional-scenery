@@ -57,7 +57,9 @@ export function HeroSection({ world }: { world: World }) {
         >
           <div>
             <div className="text-white/60">Year</div>
-            <div className="mt-1 text-white font-medium normal-case tracking-normal text-sm">{world.year}</div>
+            <div className="mt-1 text-white font-medium normal-case tracking-normal text-sm">
+              {world.year}
+            </div>
           </div>
         </motion.div>
       </div>

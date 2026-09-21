@@ -13,4 +13,4 @@ export async function apiFetch<T>(path: string): Promise<T> {
   return json.data as T;
 }
 
-export const getBio = () => apiFetch<import('./types').ApiBio>("/api/bio");
+export const getBio = () => apiFetch<import("./types").ApiBio>("/api/bio");

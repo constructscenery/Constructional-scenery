@@ -35,12 +35,7 @@ function Picture({
       className={`absolute flex items-center justify-center ${className}`}
     >
       <div className="relative h-full w-full overflow-hidden rounded-lg">
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
+        <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
       </div>
     </motion.div>
   );

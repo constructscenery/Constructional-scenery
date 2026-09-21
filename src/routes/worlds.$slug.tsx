@@ -38,9 +38,8 @@ export const Route = createFileRoute("/worlds/$slug")({
       });
     }
 
-    const next = publicWorlds.length > 1
-      ? adaptApiWorld(publicWorlds[(idx + 1) % publicWorlds.length])
-      : null;
+    const next =
+      publicWorlds.length > 1 ? adaptApiWorld(publicWorlds[(idx + 1) % publicWorlds.length]) : null;
 
     return { world, next };
   },

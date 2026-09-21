@@ -42,22 +42,25 @@ export function Footer() {
                 </div>
               </div>
             </div>
-
-
           </div>
 
           {columns.map((c) => (
             <div key={c.title} className="md:col-span-2">
-              <div className="text-[11px] uppercase tracking-[0.25em] text-white/40 mb-5">{c.title}</div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-white/40 mb-5">
+                {c.title}
+              </div>
               <ul className="space-y-3">
                 {c.links.map((link: any) => {
                   const isString = typeof link === "string";
                   const label = isString ? link : link.label;
                   const url = isString ? "#" : link.url;
-                  
+
                   return (
                     <li key={label}>
-                      <a href={url} className="text-sm text-white/80 hover:text-white transition-colors">
+                      <a
+                        href={url}
+                        className="text-sm text-white/80 hover:text-white transition-colors"
+                      >
                         {label}
                       </a>
                     </li>
@@ -73,17 +76,32 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="flex gap-6">
               {instagram && (
-                <a href={instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
                   IMDB
                 </a>
               )}
               {linkedin && (
-                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <a
+                  href={linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
                   LinkedIn
                 </a>
               )}
               {vimeo && (
-                <a href={vimeo} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <a
+                  href={vimeo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
                   Vimeo
                 </a>
               )}
