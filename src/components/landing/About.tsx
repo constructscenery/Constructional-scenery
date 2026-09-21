@@ -94,7 +94,9 @@ export function About() {
                   transition={{ duration: 0.6, delay: 0.2 + idx * 0.08 }}
                 >
                   <div className="font-display text-4xl md:text-5xl">{s.value}</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-chrome">{s.label}</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-chrome">
+                    {s.label}
+                  </div>
                 </motion.div>
               ))}
             </div>

@@ -8,7 +8,9 @@ export function WorldGallery({ world }: { world: World }) {
   const images = world.gallery;
   const half = Math.ceil(images.length / 2);
   const rowA = images.slice(0, half);
-  const rowB = images.slice(half).concat(images.slice(0, Math.max(0, half - (images.length - half))));
+  const rowB = images
+    .slice(half)
+    .concat(images.slice(0, Math.max(0, half - (images.length - half))));
   const rows: { items: string[]; velocity: number }[] = [
     { items: [...rowA, ...rowA], velocity: 0.6 },
     { items: [...rowB, ...rowB], velocity: -0.6 },

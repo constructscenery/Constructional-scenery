@@ -66,13 +66,13 @@ export function Sustainability() {
               viewport={{ once: true }}
               transition={{ duration: 0.9 }}
             >
-              <p className="mb-6 text-[11px] uppercase tracking-[0.3em] text-chrome">Sustainability</p>
+              <p className="mb-6 text-[11px] uppercase tracking-[0.3em] text-chrome">
+                Sustainability
+              </p>
               <h2 className="font-display text-5xl md:text-7xl text-balance leading-[0.95]">
                 {data.headline}
               </h2>
-              <p className="mt-8 text-lg text-ink-soft leading-relaxed max-w-lg">
-                {data.bodyText}
-              </p>
+              <p className="mt-8 text-lg text-ink-soft leading-relaxed max-w-lg">{data.bodyText}</p>
             </motion.div>
 
             <div className="mt-12 grid sm:grid-cols-2 gap-px bg-border rounded-2xl overflow-hidden border border-border">

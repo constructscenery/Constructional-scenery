@@ -61,7 +61,6 @@ export function Hero() {
             )}
           </video>
         )}
-
       </motion.div>
 
       {/* Overlays */}
@@ -99,11 +98,7 @@ export function Hero() {
           className="flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-white/90 font-medium"
         >
           <span className="h-px w-10 bg-white/60" />
-          {data ? (
-            data.eyebrow
-          ) : (
-            <span className="h-3 w-56 animate-pulse rounded bg-white/20" />
-          )}
+          {data ? data.eyebrow : <span className="h-3 w-56 animate-pulse rounded bg-white/20" />}
         </motion.div>
 
         {/* headline block */}
@@ -190,8 +185,12 @@ export function Hero() {
           {trustStats.length > 0
             ? trustStats.map((s) => (
                 <div key={s.label}>
-                  <div className="font-display text-3xl md:text-4xl text-white font-bold">{s.value}</div>
-                  <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/80 font-medium">{s.label}</div>
+                  <div className="font-display text-3xl md:text-4xl text-white font-bold">
+                    {s.value}
+                  </div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/80 font-medium">
+                    {s.label}
+                  </div>
                 </div>
               ))
             : Array.from({ length: 4 }).map((_, k) => (

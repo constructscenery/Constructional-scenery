@@ -29,7 +29,10 @@ const homepageQueries = [
   { queryKey: ["projects"], queryFn: () => apiFetch<ApiProject[]>("/api/projects") },
   { queryKey: ["process"], queryFn: () => apiFetch<ApiProcessStep[]>("/api/process") },
   { queryKey: ["testimonials"], queryFn: () => apiFetch<ApiTestimonial[]>("/api/testimonials") },
-  { queryKey: ["sustainability"], queryFn: () => apiFetch<ApiSustainability>("/api/sustainability") },
+  {
+    queryKey: ["sustainability"],
+    queryFn: () => apiFetch<ApiSustainability>("/api/sustainability"),
+  },
   { queryKey: ["contact"], queryFn: () => apiFetch<ApiContact>("/api/contact") },
   { queryKey: ["footer"], queryFn: () => apiFetch<ApiFooter>("/api/footer") },
 ] as const;
@@ -47,14 +50,12 @@ export const Route = createFileRoute("/")({
       { title: "Construct Scenery — We Build Worlds That Audiences Believe" },
       {
         name: "description",
-        content:
-          "Uk set construction for film and television",
+        content: "Uk set construction for film and television",
       },
       { property: "og:title", content: "Construct Scenery — We Build Worlds" },
       {
         property: "og:description",
-        content:
-          "Uk set construction for film and television",
+        content: "Uk set construction for film and television",
       },
     ],
   }),

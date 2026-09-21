@@ -7,11 +7,7 @@ export function NextProjectNav({ next }: { next: World }) {
   return (
     <section id="suggestions" className="bg-background py-24 md:py-32">
       <div className="container-x">
-        <Link
-          to="/worlds/$slug"
-          params={{ slug: next.slug }}
-          className="group block"
-        >
+        <Link to="/worlds/$slug" params={{ slug: next.slug }} className="group block">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}

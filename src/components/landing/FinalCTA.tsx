@@ -12,7 +12,10 @@ export function FinalCTA() {
   });
 
   return (
-    <section id="contact" className="relative overflow-hidden bg-zinc-950 text-white py-40 md:py-56">
+    <section
+      id="contact"
+      className="relative overflow-hidden bg-zinc-950 text-white py-40 md:py-56"
+    >
       {/* animated gradient — always visible */}
       <div className="absolute inset-0 opacity-60">
         <motion.div

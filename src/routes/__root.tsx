@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -21,8 +22,8 @@ function NotFoundComponent() {
       <Nav />
       <div className="flex-1 flex flex-col items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -33,7 +34,8 @@ function NotFoundComponent() {
             Lost in the workshop.
           </h1>
           <p className="text-base md:text-lg text-ink-soft mb-10 max-w-md mx-auto">
-            The page or case study you're looking for doesn't exist, has been moved, or is still under construction.
+            The page or case study you're looking for doesn't exist, has been moved, or is still
+            under construction.
           </p>
           <Link
             to="/"
@@ -136,6 +138,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <Scripts />
+        <Analytics />
       </body>
     </html>
   );
@@ -146,23 +149,25 @@ import { AnimatePresence } from "motion/react";
 
 function GlobalLoader() {
   const isLoading = useRouterState({ select: (s) => s.isLoading });
-  
+
   return (
     <AnimatePresence>
       {isLoading && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
         >
           <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10 bg-[radial-gradient(circle_at_50%_40%,_rgba(0,0,0,0.1)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_40%,_rgba(255,255,255,0.1)_0%,_transparent_50%)]" />
-          <motion.div 
+          <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
             className="h-10 w-10 rounded-full border-2 border-chrome border-t-ink mb-6 relative z-10"
           />
-          <p className="text-[11px] uppercase tracking-[0.3em] text-chrome relative z-10 animate-pulse">Loading World</p>
+          <p className="text-[11px] uppercase tracking-[0.3em] text-chrome relative z-10 animate-pulse">
+            Loading World
+          </p>
         </motion.div>
       )}
     </AnimatePresence>

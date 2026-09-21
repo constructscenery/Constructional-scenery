@@ -13,13 +13,7 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [
-    tanstackStart(),
-    nitro(),
-    viteReact(),
-    tailwindcss(),
-    tsConfigPaths(),
-  ],
+  plugins: [tanstackStart(), nitro(), viteReact(), tailwindcss(), tsConfigPaths()],
   define: {
     "process.env.NODE_ENV": JSON.stringify(mode),
   },

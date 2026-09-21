@@ -25,7 +25,9 @@ function BioPage() {
   if (!bio) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-sm tracking-widest text-muted-foreground uppercase">Profile not found</div>
+        <div className="text-sm tracking-widest text-muted-foreground uppercase">
+          Profile not found
+        </div>
       </div>
     );
   }
@@ -34,7 +36,7 @@ function BioPage() {
     <div className="min-h-screen bg-background flex flex-col justify-between">
       <div>
         <Nav />
-        
+
         <main className="container-x relative pt-32 pb-24 md:pt-48">
           <div className="mx-auto w-[95%] sm:w-[92%] md:w-[90%] lg:w-[85%] max-w-6xl text-center">
             {bio.imageUrl && (
@@ -44,14 +46,14 @@ function BioPage() {
                 className="mx-auto h-32 w-32 rounded-full object-cover shadow-elevated md:h-40 md:w-40"
               />
             )}
-            
+
             <h1 className="font-display mt-8 text-4xl font-semibold tracking-tight md:text-5xl">
               {bio.name}
             </h1>
             <p className="mt-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
               {bio.role}
             </p>
-            
+
             <p className="mt-8 text-lg leading-relaxed text-foreground/80 md:text-xl">
               {bio.description}
             </p>
@@ -75,7 +77,12 @@ function BioPage() {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
                     </svg>
                   </a>
                 ))}

@@ -32,11 +32,15 @@ export function ProjectOverview({ world }: { world: World }) {
             <div className="rounded-2xl border border-border bg-fog p-8">
               {hasFacts && (
                 <>
-                  <p className="mb-6 text-[11px] uppercase tracking-[0.3em] text-chrome">By the numbers</p>
+                  <p className="mb-6 text-[11px] uppercase tracking-[0.3em] text-chrome">
+                    By the numbers
+                  </p>
                   <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
                     {world.facts.map((f) => (
                       <div key={f.label}>
-                        <dt className="text-[10px] uppercase tracking-[0.25em] text-chrome">{f.label}</dt>
+                        <dt className="text-[10px] uppercase tracking-[0.25em] text-chrome">
+                          {f.label}
+                        </dt>
                         <dd className="mt-2 font-display text-3xl text-ink">{f.value}</dd>
                       </div>
                     ))}
@@ -50,8 +54,13 @@ export function ProjectOverview({ world }: { world: World }) {
                   <p className="mb-5 text-[11px] uppercase tracking-[0.3em] text-chrome">Credits</p>
                   <dl className="space-y-3">
                     {world.credits!.map((c, idx) => (
-                      <div key={`${c.role}-${idx}`} className="flex items-baseline justify-between gap-4">
-                        <dt className="text-[11px] uppercase tracking-[0.2em] text-chrome">{c.role}</dt>
+                      <div
+                        key={`${c.role}-${idx}`}
+                        className="flex items-baseline justify-between gap-4"
+                      >
+                        <dt className="text-[11px] uppercase tracking-[0.2em] text-chrome">
+                          {c.role}
+                        </dt>
                         <dd className="text-sm text-ink">{c.name}</dd>
                       </div>
                     ))}
